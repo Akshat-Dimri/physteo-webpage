@@ -434,7 +434,7 @@
         <div class="terminal-logs">
             <p>> CONFIGURING TERMINAL...</p>
             <p>> TERMINAL EXHIBITS: DOPPLER_SHIFT, SCHRODINGER_GLITCH</p>
-            <p>> ENTER 'light' FOR INVERSION</p>
+            <p>> ENTER 'light' FOR INVERSION || TAP(4) FOR INVERSION</p>
         </div>
         <div class="loading-bar">
             SYSTEM_BOOT: <span id="loader-line"></span>
@@ -950,6 +950,31 @@
             if(keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
             if(keyBuffer.endsWith('light')) { document.body.classList.toggle('inverted'); updateStatusBar("POLARITY_INVERTED | LIGHT_MODE: ACTIVE"); keyBuffer = ''; setTimeout(resetStatus, 2000); }
         });
+
+        /* === MOBILE 4-TAP INVERSION (NON-INTRUSIVE) === */
+
+        let tapCount = 0;
+        let tapTimer = null;
+        const TAP_WINDOW = 700; // ms
+
+        document.addEventListener('touchend', () => {
+            tapCount++;
+
+            if (tapCount === 1) {
+                tapTimer = setTimeout(() => {
+                    tapCount = 0;
+                }, TAP_WINDOW);
+            }
+
+            if (tapCount === 4) {
+                clearTimeout(tapTimer);
+                tapCount = 0;
+
+                document.body.classList.toggle('inverted');
+                updateStatusBar("POLARITY_INVERTED | TOUCH_GESTURE: ACTIVE");
+                setTimeout(resetStatus, 2000);
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
