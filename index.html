@@ -645,9 +645,9 @@
                     } else { currentContent += fullString.charAt(charIndex); charIndex++; }
                 }
                 h1.innerHTML = currentContent + cursor;
-                let speed = isDeleting ? 30 : 60;
-                if (!isDeleting && charIndex >= fullString.length) { speed = 2500; isDeleting = true; } 
-                else if (isDeleting && currentContent === '') { isDeleting = false; stepIndex = (stepIndex + 1) % textSteps.length; charIndex = 0; speed = 500; }
+                let speed = isDeleting ? 50 : 100;
+                if (!isDeleting && charIndex >= fullString.length) { speed = 3500; isDeleting = true; } 
+                else if (isDeleting && currentContent === '') { isDeleting = false; stepIndex = (stepIndex + 1) % textSteps.length; charIndex = 0; speed = 1000; }
                 setTimeout(loop, speed);
             }
             loop();
