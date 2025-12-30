@@ -7,7 +7,7 @@
     <style>
         /* --- CORE VARIABLES --- */
         :root {
-            --bg-body: #ffffff;
+            --bg-body: #000000;
             --dot-color: #000000;
             --container-bg: rgba(0, 0, 0, 0.92);
             --text-color: #ffffff;
@@ -20,26 +20,36 @@
 
         /* --- INVERTED MODE --- */
         body.inverted {
-            --bg-body: #000000;
-            --dot-color: #ffffff;
+            --bg-body: #ffffff;
+            --dot-color: #000000;
             --container-bg: rgba(255, 255, 255, 0.92);
             --text-color: #000000;
             --border-color: #000000;
-            --accent-color: #ffffff;
+            --accent-color: #000000;
         }
+
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg-body);
-            background-image: radial-gradient(circle, var(--dot-color) 85%, transparent 86%);
-            background-size: 4px 4px;
+            transition: background-color 0.5s ease;
+            /* background-image: radial-gradient(circle, var(--dot-color) 85%, transparent 86%);
+            background-size: 4px 4px; */
             color: var(--text-color);
             font-family: var(--font-main);
             line-height: 1.5;
             overflow-x: hidden;
             transition: background-color 0.5s ease;
             width: 100%;
+        }
+
+        #dot-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;        /* below preloader (9999) */
+            pointer-events: none;
+            background: transparent;
         }
 
         /* --- ARTIFACT IMAGE STYLING --- */
@@ -419,6 +429,7 @@
     </style>
 </head>
 <body>
+    <canvas id="dot-canvas"></canvas>
     <div id="preloader">
         <div class="terminal-logs">
             <p>> CONFIGURING TERMINAL...</p>
@@ -451,6 +462,109 @@
     </div>
 
     <script>
+        /* === DOT CANVAS SYSTEM === */
+
+            const dotCanvas = document.getElementById("dot-canvas");
+            const dotCtx = dotCanvas.getContext("2d");
+
+            function resizeCanvas() {
+                dotCanvas.width = window.innerWidth;
+                dotCanvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener("resize", resizeCanvas);
+
+            const DOT_SPACING = 8;
+            const DOT_SIZE = 2;
+            const dots = [];
+
+            function createDots() {
+                dots.length = 0;
+                for (let y = 0; y < dotCanvas.height; y += DOT_SPACING) {
+                    for (let x = 0; x < dotCanvas.width; x += DOT_SPACING) {
+                        dots.push({
+                            x, y,
+                            tx: x, ty: y
+                        });
+                    }
+                }
+            }
+            createDots();
+
+            const logoImg = new Image();
+            logoImg.src = "physteo-logo.png";
+
+            let logoReady = false;
+            let logoPoints = [];
+
+            logoImg.onload = () => {
+                const temp = document.createElement("canvas");
+                const tctx = temp.getContext("2d");
+
+                const SIZE = 300;
+                temp.width = SIZE;
+                temp.height = SIZE;
+
+                tctx.drawImage(logoImg, 0, 0, SIZE, SIZE);
+                const imgData = tctx.getImageData(0, 0, SIZE, SIZE).data;
+
+                for (let y = 0; y < SIZE; y += 3) {
+                    for (let x = 0; x < SIZE; x += 3) {
+                        if (imgData[(y * SIZE + x) * 4 + 3] > 150) {
+                            logoPoints.push({
+                                x: x + dotCanvas.width / 2 - SIZE / 2,
+                                y: y + dotCanvas.height / 2 - SIZE / 2
+                            });
+                        }
+                    }
+                }
+                logoReady = true;
+            };
+
+            function assignLogoTargets() {
+                dots.forEach((d, i) => {
+                    const p = logoPoints[i % logoPoints.length];
+                    d.tx = p.x;
+                    d.ty = p.y;
+                });
+            }
+
+
+            let dotAlpha = 1;
+            let morphing = false;
+
+            function animateDots() {
+                dotCtx.fillStyle = "#000";
+                dotCtx.fillRect(0, 0, dotCanvas.width, dotCanvas.height);
+                dotCtx.globalAlpha = dotAlpha;
+                dotCtx.fillStyle = "#fff";
+                dots.forEach(d => {
+                    d.x += (d.tx - d.x) * 0.06;
+                    d.y += (d.ty - d.y) * 0.08;
+                    dotCtx.fillRect(d.x, d.y, DOT_SIZE, DOT_SIZE);
+                });
+
+                if (morphing) {
+                    if (dotAlpha > 0.4) {
+                        dotAlpha -= 0.0015;   // very slow fade during morph
+                    } else {
+                        dotAlpha -= 0.03;     // fast disappear after lock
+                    }
+
+                    if (dotAlpha <= 0) {
+                        dotCanvas.style.display = "none";
+                        return;
+                    }
+                }
+
+                requestAnimationFrame(animateDots);
+            }
+
+            animateDots();
+
+
+
+
         // Scripts remain identical to the previous version, just handling the new CSS layout...
         let uptime = 0;
         let lastScrollY = window.scrollY;
@@ -477,10 +591,16 @@
                 loadProgress += "-";
                 loaderLine.innerText = loadProgress;
                 steps++;
-                if(steps > 30) {
-                    clearInterval(loadingInterval);
-                    preloader.style.opacity = "0";
-                    setTimeout(() => {
+                if (steps > 75) {
+                clearInterval(loadingInterval);
+
+                if (logoReady) {
+                    assignLogoTargets();
+                    morphing = true;
+                }
+
+                preloader.style.opacity = "0";
+                                setTimeout(() => {
                         preloader.style.display = "none";
                         mainInterface.style.opacity = "1";
                         loadPage('home');
