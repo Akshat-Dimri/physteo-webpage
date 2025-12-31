@@ -426,6 +426,56 @@
             .wave-container { display: flex; }
             .terminal-logs { font-size: 0.7rem; }
         }
+
+        /* === CONTACT FIELD (SCOPED) === */
+
+        .view-contact {
+            grid-template-columns: 1fr 1.5fr;
+        }
+
+        .contact-list {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .contact-section {
+            margin-bottom: 30px;
+        }
+
+        .contact-section-title {
+            opacity: 0.4;
+            margin-bottom: 10px;
+        }
+
+        .contact-node {
+            cursor: pointer;
+            opacity: 0.7;
+            padding: 4px 0;
+        }
+
+        .contact-node:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .contact-details {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            white-space: pre-line;
+        }
+
+        .contact-socials a {
+            margin-right: 10px;
+            text-decoration: none;
+            opacity: 0.7;
+        }
+
+        .contact-socials a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+
     </style>
 </head>
 <body>
@@ -624,12 +674,12 @@
 
         const teamDB = [
             [
-                { role: "PRESIDENT", name: "AYUSH<br>SHARMA", img: null },
-                { role: "VICE PRESIDENT", name: "SAHIL<br>RANA", img: null },
-                { role: "FINANCE HEAD", name: "AYUSH<br>ABHYUDAYA", img: null },
-                { role: "TECHNICAL HEAD", name: "SAMBHAV", img: null },
-                { role: "PR HEAD", name: "PEEYUSH<br>SHARMA", img: null },
-                { role: "CREATIVE HEAD", name: "AKSHAT<br>DIMRI", img: "akshat.jpg" }
+                { role: "PRESIDENT", name: "AYUSH<br>SHARMA",resolve:"THE PRES.", img: null },
+                { role: "VICE PRESIDENT", name: "SAHIL<br>RANA",resolve:"V.P.", img: null },
+                { role: "FINANCE HEAD", name: "AYUSH<br>ABHYUDAYA",resolve:"FINANCIAL BOSS", img: null },
+                { role: "TECHNICAL HEAD", name: "SAMBHAV\u200B\u200B",resolve: "TECH GURU", img: null },
+                { role: "PR HEAD", name: "PEEYUSH<br>SHARMA",resolve:"STRONG PR", img: null },
+                { role: "CREATIVE HEAD", name: "AKSHAT<br>DIMRI",resolve:"MAX CREATIVE", img: "akshat.jpg" }
             ],
             [
                 { role: "EXEC MEMBER", name: "RANDOM<br>PERSON", img: null },
@@ -640,6 +690,54 @@
                 { role: "EXEC MEMBER", name: "LAST<br>HUMAN", img: null }
             ]
         ];
+
+
+        const contactDB = {
+            core: [
+                {
+                    name: "AYUSH SHARMA",
+                    role: "PRESIDENT",
+                    phone: "+91 98350 35190",
+                    email: "ayush@physteo.in",
+                    socials: {
+                        IG: "#",
+                        IN: "#",
+                        GH: "#"
+                    }
+                },
+                {
+                    name: "SAHIL RANA",
+                    role: "VICE PRESIDENT",
+                    phone: "+91 98161 62477",
+                    email: "sahil@physteo.in",
+                    socials: {
+                        IG: "#",
+                        IN: "#"
+                    }
+                },
+                {
+                    name: "AKSHAT DIMRI",
+                    role: "CREATIVE HEAD",
+                    phone: "+91 XXXXXXXX",
+                    email: "akshat@physteo.in",
+                    socials: {
+                        IG: "#",
+                        IN: "#"
+                    }
+                }
+            ],
+            exec: [
+                { name: "RANDOM PERSON" },
+                { name: "ANOTHER PERSON" },
+                { name: "SOMEONE ELSE" }
+            ],
+            society: {
+                IG: "https://www.instagram.com/physteo/",
+                IN: "#",
+                EMAIL: "physteo@nith.ac.in"
+            }
+        };
+
 
         let currentEventPage = 0;
         let currentTeamPage = 0;
@@ -654,6 +752,7 @@
                 else if (pageName === 'events') { currentEventPage = 0; renderEvents(currentEventPage); }
                 else if (pageName === 'team') { currentTeamPage = 0; renderTeam(currentTeamPage); }
                 else if (pageName === 'about') renderAbout();
+                else if (pageName === 'contact') renderContact();
                 document.querySelectorAll('.content-panel').forEach((panel, i) => {
                     setTimeout(() => panel.classList.add('visible'), i * 100);
                 });
@@ -775,7 +874,14 @@
             data.forEach(member => {
                 const mid = Math.floor(Math.random()*9000)+1000;
                 html += `
-                <div class="content-panel" onmouseenter="updateStatusBar('SCANNING_MEMBER_ID: ${mid} | ROLE: ${member.role}')" onmouseleave="resetStatus()">
+                <div class="content-panel"
+                    onmouseenter="
+                        updateStatusBar('SCANNING_MEMBER_ID: ${mid} | ROLE: ${member.role}');
+                        eraseRoleText(this.querySelector('.role-anim'));
+                    "
+                    onmouseleave="
+                        resetStatus();
+                    ">
                     <div class="team-card">
                         <div class="artifact-frame">
                             <img src="${member.img || 'placeholder.jpg'}" class="data-img" style="${!member.img ? 'opacity:0.2' : ''}">
@@ -783,9 +889,14 @@
                         <div class="team-details">
                             <span class="date">MEMBER_ID: ${mid}</span>
                             <div class="team-name-group">
-                                <h2 class="type-target schrodinger-target" style="font-size: 1.2rem; line-height: 1.1;">${member.name}</h2>
+                                <h2 
+                                class="type-target schrodinger-target"
+                                data-resolve="${member.resolve || ''}" 
+                                style="font-size: 1.2rem; line-height: 1.1;">
+                                ${member.name}
+                                </h2>
                                 <div class="team-separator"></div>
-                                <span class="role">${member.role}</span>
+                                <span class="role role-anim">${member.role}</span>
                             </div>
                         </div>
                     </div>
@@ -799,6 +910,33 @@
                 activateSchrodingerGlitch();
             }, 50);
         }
+
+
+        function eraseRoleText(span) {
+            if (!span || span.dataset.erased === "1") return;
+
+            span.dataset.erased = "1";
+            let text = span.innerText;
+            let i = text.length;
+
+            const interval = setInterval(() => {
+                i--;
+                span.innerText = text.slice(0, i);
+
+                if (i <= 0) {
+                    clearInterval(interval);
+                }
+            }, 40);
+        }
+
+
+        function restoreRoleText(span) {
+            if (!span || !span.dataset.original) return;
+
+            span.innerText = span.dataset.original;
+            delete span.dataset.erasing;
+        }
+
 
                 function renderAbout() {
             viewContainer.innerHTML = `
@@ -843,6 +981,70 @@
                 document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
                 startGenericTyping();
                 activateSchrodingerGlitch();
+            }, 50);
+        }
+
+
+        function renderContact() {
+            viewContainer.innerHTML = `
+                <div class="content-panel contact-list">
+                    <div class="contact-section">
+                        <div class="contact-section-title">CORE CONTACTS</div>
+                        ${contactDB.core.map((m, i) =>
+                            `<div class="contact-node" data-core="${i}">
+                                ● ${m.name}
+                            </div>`
+                        ).join('')}
+                    </div>
+
+                    <div class="contact-section">
+                        <div class="contact-section-title">EXEC CONTACTS</div>
+                        ${contactDB.exec.map(m =>
+                            `<div class="contact-node">○ ${m.name}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+
+                <div class="content-panel contact-details" id="contact-details">
+                    CONTACT FIELD ACTIVE\nHOVER/TAP FOR INFO.
+                </div>
+
+                <div class="content-panel" style="grid-column: 1 / -1; border-top:1px solid var(--border-color);">
+                    <span style="font-family:var(--font-mono); font-size:0.8rem;">
+                        PHYSTEO HANDLES :
+                        <span class="contact-socials">
+                            <a href="${contactDB.society.IG}">INSTAGRAM</a>
+                            <a href="${contactDB.society.IN}">LINKEDIN</a>
+                            <a href="mailto:${contactDB.society.EMAIL}">EMAIL</a>
+                        </span>
+                    </span>
+                </div>
+            `;
+
+            const detailBox = document.getElementById("contact-details");
+
+            document.querySelectorAll(".contact-node[data-core]").forEach(node => {
+                node.addEventListener("mouseenter", () => {
+                    const m = contactDB.core[node.dataset.core];
+
+                    detailBox.innerText =
+        `${m.name}
+        ${m.role}
+
+        PHONE : ${m.phone}
+        EMAIL : ${m.email}
+
+        SOCIAL:
+        ${Object.keys(m.socials).join(" | ")}`;
+
+                    updateStatusBar(`SIGNAL_LOCKED | ${m.role}`);
+                });
+
+                node.addEventListener("mouseleave", resetStatus);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
             }, 50);
         }
 
@@ -922,7 +1124,18 @@
                         for(let i=0; i<target.innerText.length; i++) { glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)]; }
                         target.innerText = glitchText;
                         iterations++;
-                        if (iterations > 10) { clearInterval(interval); target.innerHTML = originalHTML; }
+                        if (iterations > 10) {
+                            clearInterval(interval);
+
+                            const resolveText = target.dataset.resolve;
+                            if (resolveText) {
+                                // preserve length exactly
+                                const trimmed = resolveText.slice(0, target.innerText.length);
+                                target.innerText = trimmed;
+                            } else {
+                                target.innerHTML = originalHTML;
+                            }
+                        }
                     }, 50);
                     updateStatusBar("QUANTUM_STATE_DECOHERENCE_DETECTED...");
                     clearTimeout(window.statusTimeout);
