@@ -115,6 +115,7 @@
         .terminal-logs p:nth-child(1) { animation-delay: 0.2s; }
         .terminal-logs p:nth-child(2) { animation-delay: 1.0s; }
         .terminal-logs p:nth-child(3) { animation-delay: 1.8s; }
+        .terminal-logs p:nth-child(4) { animation-delay: 2.6s; }
 
         .loading-bar {
             font-size: 1rem;
@@ -168,6 +169,26 @@
         body.inverted header { background: #ffffff; border-bottom: 1px solid #000; }
         body.inverted header .logo, body.inverted nav button { color: #000; }
 
+        /* --- TERMINAL COLOR MODES --- */
+        body.theme-blue {
+            --bg-body: #020617;              /* deep navy */
+            --dot-color: #020617;
+            --container-bg: rgba(2, 6, 23, 0.92);
+            --text-color: #60a5fa;           /* terminal blue */
+            --border-color: #3b82f6;
+            --accent-color: #020617;
+        }
+
+        body.theme-green {
+            --bg-body: #020c07;              /* dark phosphor green */
+            --dot-color: #020c07;
+            --container-bg: rgba(2, 12, 7, 0.92);
+            --text-color: #22c55e;           /* terminal green */
+            --border-color: #16a34a;
+            --accent-color: #020c07;
+        }
+
+
         .logo {
             padding: 0 20px;
             font-size: 1.2rem;
@@ -209,6 +230,8 @@
             transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             border-bottom: 1px solid var(--border-color);
             position: relative;
+            height: calc(100vh - 70px - 40px);
+            overflow: hidden;
         }
 
         #dynamic-view.view-home { grid-template-columns: 3fr 1fr; }
@@ -229,6 +252,32 @@
                 line-height: 1.05;
                 letter-spacing: -1px;
             }
+
+        #dynamic-view.view-archive {
+            grid-template-columns: 1fr;
+        }
+
+        #dynamic-view.view-archive .archive-panel {
+            height: 100%;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* This creates the visual 90% height safely */
+        .archive-stage {
+            position: absolute;
+            inset: 0;
+        }
+
+
+        /* Canvas truly fills usable space */
+        .archive-stage canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
 
             .about-manifest p {
                 font-family: var(--font-mono);
@@ -333,13 +382,33 @@
         .event-number { font-family: var(--font-mono); font-size: 3rem; opacity: 0.2; margin-bottom: 20px; }
         
         .scroll-arrow {
-            position: absolute; right: 20px; bottom: 20px;
-            width: 50px; height: 50px; border: 1px solid var(--border-color); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; background: var(--accent-color); color: var(--text-color); z-index: 50;
-            font-family: var(--font-mono); font-weight: bold;
-            transition: all 0.3s;
+            position: absolute;
+            right: 24px;
+            bottom: 24px;
+
+            width: 50px;
+            height: 50px;
+
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+            background: var(--accent-color);
+            color: var(--text-color);
+
+            font-family: var(--font-mono);
+            font-weight: bold;
+
+            z-index: 100;
+            pointer-events: auto;
+
+            transition: all 0.3s ease;
         }
+
         
         body:not(.inverted) .scroll-arrow { background: black; color: white; border-color: white; }
         body:not(.inverted) .scroll-arrow:hover { background: white; color: black; }
@@ -485,6 +554,7 @@
             <p>> CONFIGURING TERMINAL...</p>
             <p>> TERMINAL EXHIBITS: DOPPLER_SHIFT, SCHRODINGER_GLITCH</p>
             <p>> ENTER 'light' FOR INVERSION || TAP(4) FOR INVERSION</p>
+            <p>> COLOR_CHANNELS: TYPE 'BLUE' OR 'GREEN' TO SHIFT ACCENT</p>
         </div>
         <div class="loading-bar">
             SYSTEM_BOOT: <span id="loader-line"></span>
@@ -499,6 +569,7 @@
                     <li><button onclick="loadPage('events')">EVENTS</button></li>
                     <li><button onclick="loadPage('team')">TEAM</button></li>
                     <li><button onclick="loadPage('about')">ABOUT</button></li>
+                    <li><button onclick="loadPage('archive')">ARCHIVE</button></li>
                     <li><button onclick="loadPage('contact')">CONTACT</button></li>
                 </ul>
             </nav>
@@ -542,7 +613,7 @@
             createDots();
 
             const logoImg = new Image();
-            logoImg.src = "physteo-logo.png";
+            logoImg.src = "./images/physteo-logo.png";
 
             let logoReady = false;
             let logoPoints = [];
@@ -613,6 +684,128 @@
             animateDots();
 
 
+            let archiveDots = [];
+            let archiveTargets = [];
+            let archiveCanvas, archiveCtx;
+
+            let archiveRAF;
+
+            function startArchiveMorph(imgSrc) {    
+                archiveCanvas = document.getElementById("archive-canvas");
+                if (!archiveCanvas) return;
+
+                archiveCtx = archiveCanvas.getContext("2d");
+
+                const rect = archiveCanvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+
+                archiveCanvas.width  = rect.width * dpr;
+                archiveCanvas.height = rect.height * dpr;
+
+                archiveCanvas.style.width  = rect.width + "px";
+                archiveCanvas.style.height = rect.height + "px";
+
+                archiveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const SAMPLE_GAP = 4;
+                const STAGE_SIZE = Math.min(rect.width, rect.height);
+
+                function imageToPoints(img) {
+                    const temp = document.createElement("canvas");
+                    const tctx = temp.getContext("2d");
+
+                    temp.width  = img.width;
+                    temp.height = img.height;
+                    tctx.drawImage(img, 0, 0);
+
+                    const data = tctx.getImageData(0, 0, img.width, img.height).data;
+                    const pts = [];
+
+                    for (let y = 0; y < img.height; y += SAMPLE_GAP) {
+                        for (let x = 0; x < img.width; x += SAMPLE_GAP) {
+                            if (data[(y * img.width + x) * 4 + 3] > 128) {
+                                pts.push({ x, y });
+                            }
+                        }
+                    }
+                    return pts;
+                }
+
+                function fitToArchiveStage(points) {
+                    let minX = Infinity, minY = Infinity;
+                    let maxX = -Infinity, maxY = -Infinity;
+
+                    points.forEach(p => {
+                        minX = Math.min(minX, p.x);
+                        minY = Math.min(minY, p.y);
+                        maxX = Math.max(maxX, p.x);
+                        maxY = Math.max(maxY, p.y);
+                    });
+
+                    const scale = Math.min(
+                        STAGE_SIZE / (maxX - minX),
+                        STAGE_SIZE / (maxY - minY),
+                        1
+                    );
+
+                    const ox = rect.width  / 2 - (minX + (maxX - minX) / 2) * scale;
+                    const oy = rect.height / 2 - (minY + (maxY - minY) / 2) * scale;
+
+                    return points.map(p => ({
+                        x: p.x * scale + ox,
+                        y: p.y * scale + oy
+                    }));
+                }
+
+
+                const img = new Image();
+                img.src = imgSrc;
+
+            img.onload = () => {
+                const targets = fitToArchiveStage(imageToPoints(img));
+
+                archiveDots = Array.from({ length: targets.length }, () => ({
+                    x: rect.width / 2,
+                    y: rect.height / 2,
+                    tx: 0,
+                    ty: 0
+                }));
+
+                archiveDots.forEach((d, i) => {
+                    d.tx = targets[i].x;
+                    d.ty = targets[i].y;
+                });
+
+                animateArchiveDots();
+            };
+        }
+
+
+
+            function animateArchiveDots() {
+                if (!archiveCtx) return;
+
+                cancelAnimationFrame(archiveRAF);
+
+                function loop() {
+                    archiveCtx.clearRect(0, 0, archiveCanvas.width, archiveCanvas.height);
+                    archiveCtx.fillStyle = "#fff";
+
+                    archiveDots.forEach(d => {
+                        d.x += (d.tx - d.x) * 0.08;
+                        d.y += (d.ty - d.y) * 0.08;
+
+                        archiveCtx.beginPath();
+                        archiveCtx.arc(d.x, d.y, 1, 0, Math.PI * 2);
+                        archiveCtx.fill();
+                    });
+
+                    archiveRAF = requestAnimationFrame(loop);
+                }
+
+                loop();
+            }
+
 
 
         // Scripts remain identical to the previous version, just handling the new CSS layout...
@@ -679,7 +872,7 @@
                 { role: "FINANCE HEAD", name: "AYUSH<br>ABHYUDAYA",resolve:"FINANCIAL BOSS", img: null },
                 { role: "TECHNICAL HEAD", name: "SAMBHAV\u200B\u200B",resolve: "TECH GURU", img: null },
                 { role: "PR HEAD", name: "PEEYUSH<br>SHARMA",resolve:"STRONG PR", img: null },
-                { role: "CREATIVE HEAD", name: "AKSHAT<br>DIMRI",resolve:"MAX CREATIVE", img: "akshat.jpg" }
+                { role: "CREATIVE HEAD", name: "AKSHAT<br>DIMRI",resolve:"MAX CREATIVE", img: "./images/akshat.jpg" }
             ],
             [
                 { role: "EXEC MEMBER", name: "RANDOM<br>PERSON", img: null },
@@ -691,6 +884,15 @@
             ]
         ];
 
+        const archiveDB = [
+            { img: "./images/logo1.png" },
+            { img: "./images/png_1.png" },
+            { img: "./images/png_2.png" },
+            { img: "./images/png_3.png" },
+            { img: "./images/logo2.png" }
+        ];
+
+        let currentArchiveIndex = 0;
 
         const contactDB = {
             core: [
@@ -752,6 +954,7 @@
                 else if (pageName === 'events') { currentEventPage = 0; renderEvents(currentEventPage); }
                 else if (pageName === 'team') { currentTeamPage = 0; renderTeam(currentTeamPage); }
                 else if (pageName === 'about') renderAbout();
+                else if (pageName === 'archive') { currentArchiveIndex = 0; renderArchive(currentArchiveIndex);}
                 else if (pageName === 'contact') renderContact();
                 document.querySelectorAll('.content-panel').forEach((panel, i) => {
                     setTimeout(() => panel.classList.add('visible'), i * 100);
@@ -911,6 +1114,21 @@
             }, 50);
         }
 
+        function renderArchive(index) {
+            viewContainer.innerHTML = `
+                <div class="content-panel archive-panel">
+                    <div class="archive-stage">
+                        <canvas id="archive-canvas"></canvas>
+                    </div>
+                </div>
+                <div class="scroll-arrow" onclick="nextArchive()">></div>
+            `;
+
+            setTimeout(() => {
+                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
+                startArchiveMorph(archiveDB[index].img);
+            }, 50);
+        }
 
         function eraseRoleText(span) {
             if (!span || span.dataset.erased === "1") return;
@@ -1052,6 +1270,13 @@
         function nextPageEvents() { updateStatusBar("PAGINATING_EVENT_INDEX..."); untypeAll(() => { currentEventPage++; if (currentEventPage >= eventsDB.length) currentEventPage = 0; renderEvents(currentEventPage); }); }
         function nextPageTeam() { updateStatusBar("PAGINATING_TEAM_INDEX..."); untypeAll(() => { currentTeamPage++; if (currentTeamPage >= teamDB.length) currentTeamPage = 0; renderTeam(currentTeamPage); }); }
 
+        function nextArchive() {
+            updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
+            currentArchiveIndex++;
+            if (currentArchiveIndex >= archiveDB.length) currentArchiveIndex = 0;
+            startArchiveMorph(archiveDB[currentArchiveIndex].img);
+        }
+
         function untypeAll(callback) {
             const targets = document.querySelectorAll('.type-target');
             let completed = 0;
@@ -1160,9 +1385,34 @@
         let keyBuffer = '';
         document.addEventListener('keydown', (e) => {
             keyBuffer += e.key.toLowerCase();
-            if(keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
-            if(keyBuffer.endsWith('light')) { document.body.classList.toggle('inverted'); updateStatusBar("POLARITY_INVERTED | LIGHT_MODE: ACTIVE"); keyBuffer = ''; setTimeout(resetStatus, 2000); }
+            if (keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
+
+            const body = document.body;
+
+            if (keyBuffer.endsWith('light')) {
+                body.classList.remove('theme-blue', 'theme-green');
+                body.classList.toggle('inverted');
+                updateStatusBar("POLARITY_INVERTED | LIGHT_MODE: ACTIVE");
+                keyBuffer = '';
+            }
+
+            if (keyBuffer.endsWith('blue')) {
+                body.classList.remove('inverted', 'theme-green');
+                body.classList.add('theme-blue');
+                updateStatusBar("TERMINAL_THEME | BLUE_MODE: ACTIVE");
+                keyBuffer = '';
+            }
+
+            if (keyBuffer.endsWith('green')) {
+                body.classList.remove('inverted', 'theme-blue');
+                body.classList.add('theme-green');
+                updateStatusBar("TERMINAL_THEME | GREEN_MODE: ACTIVE");
+                keyBuffer = '';
+            }
+
+            setTimeout(resetStatus, 2000);
         });
+
 
         /* === MOBILE 4-TAP INVERSION (NON-INTRUSIVE) === */
 
