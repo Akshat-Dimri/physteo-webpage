@@ -690,7 +690,13 @@
 
             let archiveRAF;
 
-            function startArchiveMorph(imgSrc) {    
+            function startArchiveMorph(imgSrc) {
+                
+                                if (archiveRAF) {
+                    cancelAnimationFrame(archiveRAF);
+                    archiveRAF = null;
+                }
+
                 archiveCanvas = document.getElementById("archive-canvas");
                 if (!archiveCanvas) return;
 
@@ -758,26 +764,42 @@
                 }
 
 
-                const img = new Image();
-                img.src = imgSrc;
+                    const img = archiveImageCache[currentArchiveIndex];
 
-            img.onload = () => {
-                const targets = fitToArchiveStage(imageToPoints(img));
+                    // Fallback (safety)
+                    if (!img) {
+                        const fallback = new Image();
+                        fallback.src = imgSrc;
+                        fallback.onload = () => processArchiveImage(fallback);
+                        return;
+                    }
 
-                archiveDots = Array.from({ length: targets.length }, () => ({
-                    x: rect.width / 2,
-                    y: rect.height / 2,
-                    tx: 0,
-                    ty: 0
-                }));
 
-                archiveDots.forEach((d, i) => {
-                    d.tx = targets[i].x;
-                    d.ty = targets[i].y;
-                });
+                function processArchiveImage(image) {
+                    const targets = fitToArchiveStage(imageToPoints(image));
 
-                animateArchiveDots();
-            };
+                    archiveDots = Array.from({ length: targets.length }, () => ({
+                        x: rect.width / 2,
+                        y: rect.height / 2,
+                        tx: 0,
+                        ty: 0
+                    }));
+
+                    archiveDots.forEach((d, i) => {
+                        d.tx = targets[i].x;
+                        d.ty = targets[i].y;
+                    });
+
+                    animateArchiveDots();
+                }
+
+                // If already decoded, run immediately
+                if (img.complete) {
+                    processArchiveImage(img);
+                } else {
+                    img.onload = () => processArchiveImage(img);
+                }
+
         }
 
 
@@ -842,6 +864,13 @@
                     morphing = true;
                 }
 
+                // Warm up archive images after boot
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(preloadArchiveImages);
+                } else {
+                    setTimeout(preloadArchiveImages, 1500);
+                }
+
                 preloader.style.opacity = "0";
                                 setTimeout(() => {
                         preloader.style.display = "none";
@@ -891,6 +920,23 @@
             { img: "./images/png_3.png" },
             { img: "./images/logo2.png" }
         ];
+
+        // === ARCHIVE IMAGE PRE-DECODE CACHE ===
+        const archiveImageCache = [];
+
+        function preloadArchiveImages() {
+            archiveDB.forEach(item => {
+                const img = new Image();
+                img.src = item.img;
+
+                // Hints for mobile browsers
+                img.decoding = "async";
+                img.loading = "eager";
+
+                archiveImageCache.push(img);
+            });
+        }
+
 
         let currentArchiveIndex = 0;
 
