@@ -569,7 +569,7 @@
                     <li><button onclick="loadPage('events')">EVENTS</button></li>
                     <li><button onclick="loadPage('team')">TEAM</button></li>
                     <li><button onclick="loadPage('about')">ABOUT</button></li>
-                    <li><button onclick="loadPage('archive_1')">ARCHIVE</button></li>
+                    <li><button onclick="loadPage('archive')">ARCHIVE</button></li>
                     <li><button onclick="loadPage('contact')">CONTACT</button></li>
                 </ul>
             </nav>
@@ -771,13 +771,13 @@
                         const fallback = new Image();
                         fallback.src = imgSrc;
                         fallback.onload = () => processArchiveImage(fallback);
+                        animateArchiveDots();
                         return;
                     }
 
 
                 function processArchiveImage(image) {
                     const targets = fitToArchiveStage(imageToPoints(image));
-
                     archiveDots = Array.from({ length: targets.length }, () => ({
                         x: rect.width / 2,
                         y: rect.height / 2,
@@ -792,6 +792,7 @@
 
                     animateArchiveDots();
                 }
+
 
                 // If already decoded, run immediately
                 if (img.complete) {
