@@ -1,1016 +1,1318 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Physteo - NIT Hamirpur</title>
     <style>
-        /* --- CORE VARIABLES --- */
-        :root {
-            --bg-body: #000000;
-            --dot-color: #000000;
-            --container-bg: rgba(0, 0, 0, 0.92);
-            --text-color: #ffffff;
-            --border-color: #ffffff;
-            --accent-color: #000000;
-            
-            --font-main: 'Helvetica', 'Arial', sans-serif;
-            --font-mono: 'Courier New', Courier, monospace;
-        }
+      /* --- CORE VARIABLES --- */
+      :root {
+        --bg-body: #000000;
+        --dot-color: #000000;
+        --container-bg: rgba(0, 0, 0, 0.92);
+        --text-color: #ffffff;
+        --border-color: #ffffff;
+        --accent-color: #000000;
 
-        /* --- INVERTED MODE --- */
-        body.inverted {
-            --bg-body: #ffffff;
-            --dot-color: #000000;
-            --container-bg: rgba(255, 255, 255, 0.92);
-            --text-color: #000000;
-            --border-color: #000000;
-            --accent-color: #000000;
-        }
+        --font-main: "Helvetica", "Arial", sans-serif;
+        --font-mono: "Courier New", Courier, monospace;
+      }
 
+      /* --- INVERTED MODE --- */
+      body.inverted {
+        --bg-body: #ffffff;
+        --dot-color: #000000;
+        --container-bg: rgba(255, 255, 255, 0.92);
+        --text-color: #000000;
+        --border-color: #000000;
+        --accent-color: #000000;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            background-color: var(--bg-body);
-            transition: background-color 0.5s ease;
-            /* background-image: radial-gradient(circle, var(--dot-color) 85%, transparent 86%);
+      body {
+        background-color: var(--bg-body);
+        transition: background-color 0.5s ease;
+        /* background-image: radial-gradient(circle, var(--dot-color) 85%, transparent 86%);
             background-size: 4px 4px; */
-            color: var(--text-color);
-            font-family: var(--font-main);
-            line-height: 1.5;
-            overflow-x: hidden;
-            transition: background-color 0.5s ease;
-            width: 100%;
+        color: var(--text-color);
+        font-family: var(--font-main);
+        line-height: 1.5;
+        overflow-x: hidden;
+        transition: background-color 0.5s ease;
+        width: 100%;
+      }
+
+      #dot-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 9998; /* below preloader (9999) */
+        pointer-events: none;
+        background: transparent;
+      }
+
+      /* --- ARTIFACT IMAGE STYLING --- */
+      .artifact-frame {
+        position: relative;
+        border: 1px solid var(--border-color);
+        background: #000;
+        overflow: hidden;
+        background: linear-gradient(
+            rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.1) 50%
+          ),
+          linear-gradient(
+            90deg,
+            rgba(255, 0, 0, 0.03),
+            rgba(0, 255, 0, 0.01),
+            rgba(0, 0, 255, 0.03)
+          );
+        background-size: 100% 3px, 3px 100%;
+      }
+
+      .event-card .artifact-frame {
+        width: 100%;
+        height: 140px;
+        margin-bottom: 15px;
+      }
+
+      /* SCALED UP: Increased width to 150px and height to 200px */
+      .team-card .artifact-frame {
+        width: 200px;
+        height: 250px;
+        flex-shrink: 0;
+      }
+
+      .data-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        filter: grayscale(1) contrast(1.2) brightness(0.7);
+        opacity: 0.6;
+        transition: filter 0.4s ease, opacity 0.4s ease, transform 0.8s ease;
+      }
+
+      .content-panel:hover .data-img {
+        filter: grayscale(0.4) contrast(1) brightness(0.9);
+        opacity: 0.9;
+        transform: scale(1.03);
+      }
+
+      body.inverted .artifact-frame {
+        background: #fff;
+      }
+      body.inverted .data-img {
+        filter: grayscale(1) contrast(1.5) invert(1);
+        opacity: 0.8;
+      }
+
+      /* --- PRELOADER STYLES --- */
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        color: #fff;
+        z-index: 9999;
+        font-family: var(--font-mono);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 40px;
+        transition: opacity 0.8s ease;
+      }
+
+      .terminal-logs p {
+        margin-bottom: 10px;
+        opacity: 0;
+        animation: fadeInLog 0.5s forwards;
+        font-size: 0.9rem;
+      }
+      .terminal-logs p:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+      .terminal-logs p:nth-child(2) {
+        animation-delay: 1s;
+      }
+      .terminal-logs p:nth-child(3) {
+        animation-delay: 1.8s;
+      }
+      .terminal-logs p:nth-child(4) {
+        animation-delay: 2.6s;
+      }
+
+      .loading-bar {
+        font-size: 1rem;
+        opacity: 0.8;
+        word-break: break-all;
+      }
+
+      @keyframes fadeInLog {
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* --- SYSTEM STATUS EFFECTS --- */
+      .system-status {
+        font-family: var(--font-mono);
+        margin-bottom: 20px;
+        color: #008000;
+        animation: slowBlink 3s infinite;
+      }
+
+      @keyframes slowBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      /* --- GLOBAL LAYOUT --- */
+      .grid-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        background-color: var(--container-bg);
+        backdrop-filter: blur(2px);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 1s ease, background-color 0.5s ease,
+          border-color 0.5s ease, color 0.5s ease, text-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 70px;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--accent-color);
+        position: relative;
+        z-index: 10;
+        transition: background 0.5s ease;
+      }
+
+      body:not(.inverted) header {
+        color: white;
+      }
+      body.inverted header {
+        background: #ffffff;
+        border-bottom: 1px solid #000;
+      }
+      body.inverted header .logo,
+      body.inverted nav button {
+        color: #000;
+      }
+
+      /* --- TERMINAL COLOR MODES --- */
+      body.theme-blue {
+        --bg-body: #020617; /* deep navy */
+        --dot-color: #020617;
+        --container-bg: rgba(2, 6, 23, 0.92);
+        --text-color: #60a5fa; /* terminal blue */
+        --border-color: #3b82f6;
+        --accent-color: #020617;
+      }
+
+      body.theme-green {
+        --bg-body: #020c07; /* dark phosphor green */
+        --dot-color: #020c07;
+        --container-bg: rgba(2, 12, 7, 0.92);
+        --text-color: #22c55e; /* terminal green */
+        --border-color: #16a34a;
+        --accent-color: #020c07;
+      }
+
+      .logo {
+        padding: 0 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 1px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border-color);
+        cursor: pointer;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        height: 70px;
+      }
+      nav li {
+        height: 100%;
+        border-left: 1px solid var(--border-color);
+      }
+
+      nav button {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        padding: 0 25px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      nav button:hover {
+        background: var(--border-color);
+        color: var(--accent-color);
+      }
+
+      #dynamic-view {
+        flex: 1;
+        display: grid;
+        transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        height: calc(100vh - 70px - 40px);
+        overflow: hidden;
+      }
+
+      #dynamic-view.view-home {
+        grid-template-columns: 3fr 1fr;
+      }
+      #dynamic-view.view-events {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      #dynamic-view.view-team {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto;
+      }
+
+      /* --- ABOUT MODULE --- */
+      #dynamic-view.view-about {
+        grid-template-columns: 1.5fr 1fr;
+      }
+
+      .about-manifest h1 {
+        font-size: 3.2rem;
+        line-height: 1.05;
+        letter-spacing: -1px;
+      }
+
+      #dynamic-view.view-archive {
+        grid-template-columns: 1fr;
+      }
+
+      #dynamic-view.view-archive .archive-panel {
+        height: 100%;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* This creates the visual 90% height safely */
+      .archive-stage {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* Canvas truly fills usable space */
+      .archive-stage canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .about-manifest p {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        margin-top: 20px;
+        opacity: 0.9;
+        max-width: 90%;
+      }
+
+      .system-manifest {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+      }
+
+      .manifest-entry {
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--border-color);
+      }
+
+      .manifest-label {
+        opacity: 0.4;
+        text-transform: uppercase;
+      }
+
+      .manifest-value {
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+      }
+
+      .content-panel {
+        padding: 30px;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        position: relative;
+        min-height: 300px;
+      }
+
+      .view-events .content-panel:nth-child(3) {
+        border-right: none;
+      }
+      .view-team .content-panel:nth-child(3n) {
+        border-right: none;
+      }
+      .view-team .content-panel:nth-child(n + 4) {
+        border-top: 1px solid var(--border-color);
+      }
+
+      .visible {
+        opacity: 1;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        font-weight: normal;
+      }
+
+      .hero-title-wrapper {
+        min-height: 20rem;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .hero-title {
+        font-size: 4rem;
+        line-height: 1.1;
+        letter-spacing: -2px;
+      }
+      .big-char {
+        font-size: 1.5em;
+        font-weight: normal;
+        color: var(--text-color);
+        line-height: 1;
+      }
+      .small-text {
+        font-size: 0.7em;
+        opacity: 0.9;
+      }
+
+      .cursor {
+        display: inline-block;
+        background-color: var(--text-color);
+        width: 5px;
+        height: 1em;
+        margin-left: 5px;
+        animation: blink 1s infinite;
+        vertical-align: baseline;
+      }
+
+      .event-card,
+      .team-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+
+      /* Team Card Layout */
+      .team-card {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      /* MATCHED HEIGHT: Text container height matches new image height (200px) */
+      .team-details {
+        display: flex;
+        flex-direction: column;
+        height: 200px; /* This must match your image height */
+        justify-content: flex-start; /* Aligns ID to the top */
+        flex: 1;
+      }
+
+      .team-name-group {
+        margin-top: auto; /* This pushes the name group to the very bottom */
+      }
+
+      .team-separator {
+        width: 100%;
+        height: 1px;
+        background-color: var(--text-color);
+        opacity: 0.6;
+        margin: 8px 0;
+      }
+
+      .event-number {
+        font-family: var(--font-mono);
+        font-size: 3rem;
+        opacity: 0.2;
+        margin-bottom: 20px;
+      }
+
+      .scroll-arrow {
+        position: absolute;
+        right: 24px;
+        bottom: 24px;
+
+        width: 50px;
+        height: 50px;
+
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+        background: var(--accent-color);
+        color: var(--text-color);
+
+        font-family: var(--font-mono);
+        font-weight: bold;
+
+        z-index: 100;
+        pointer-events: auto;
+
+        transition: all 0.3s ease;
+      }
+
+      /* === ARCHIVE NAV PAIR === */
+
+        .scroll-next {
+            right: 24px;
         }
 
-        #dot-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: 9998;        /* below preloader (9999) */
-            pointer-events: none;
-            background: transparent;
+        .scroll-prev {
+            right: 84px; /* exactly one button width + gap */
         }
 
-        /* --- ARTIFACT IMAGE STYLING --- */
-        .artifact-frame {
-            position: relative;
-            border: 1px solid var(--border-color);
-            background: #000;
-            overflow: hidden;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 3px 100%;
+      body:not(.inverted) .scroll-arrow {
+        background: black;
+        color: white;
+        border-color: white;
+      }
+      body:not(.inverted) .scroll-arrow:hover {
+        background: white;
+        color: black;
+      }
+      body.inverted .scroll-arrow {
+        background: white;
+        color: black;
+        border-color: black;
+      }
+      body.inverted .scroll-arrow:hover {
+        background: black;
+        color: white;
+      }
+
+      .date {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        opacity: 0.7;
+        display: block;
+      }
+      .role {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        opacity: 0.8;
+        display: block;
+        text-transform: uppercase;
+      }
+
+      .section-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--accent-color);
+        color: var(--text-color);
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+      body.inverted .section-header {
+        background: #fff;
+        color: #000;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
         }
+      }
 
-        .event-card .artifact-frame { width: 100%; height: 140px; margin-bottom: 15px; }
+      /* --- WAVE & TOOLTIP --- */
+      .wave-container {
+        height: 60px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        background: var(--accent-color);
+        position: relative;
+        cursor: crosshair;
+      }
+      body.inverted .wave-container {
+        background: #fff;
+      }
 
-        /* SCALED UP: Increased width to 150px and height to 200px */
-        .team-card .artifact-frame { 
-            width: 200px; 
-            height: 250px; 
-            flex-shrink: 0;
-        }
+      .wave-svg {
+        width: 100%;
+        height: 100%;
+      }
+      .wave-path {
+        fill: none;
+        stroke: var(--text-color);
+        stroke-width: 2;
+        vector-effect: non-scaling-stroke;
+      }
 
-        .data-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top;
-            filter: grayscale(1) contrast(1.2) brightness(0.7);
-            opacity: 0.6;
-            transition: filter 0.4s ease, opacity 0.4s ease, transform 0.8s ease;
-        }
+      .wave-tooltip {
+        position: absolute;
+        background: var(--container-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        padding: 4px 8px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        pointer-events: none;
+        white-space: nowrap;
+        display: none;
+        z-index: 100;
+        box-shadow: 0 0 10px rgba(125, 125, 125, 0.2);
+      }
 
-        .content-panel:hover .data-img {
-            filter: grayscale(0.4) contrast(1) brightness(0.9);
-            opacity: 0.9;
-            transform: scale(1.03);
-        }
-
-        body.inverted .artifact-frame { background: #fff; }
-        body.inverted .data-img { filter: grayscale(1) contrast(1.5) invert(1); opacity: 0.8; }
-
-        /* --- PRELOADER STYLES --- */
-        #preloader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000;
-            color: #fff;
-            z-index: 9999;
-            font-family: var(--font-mono);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            transition: opacity 0.8s ease;
-        }
-
-        .terminal-logs p {
-            margin-bottom: 10px;
-            opacity: 0;
-            animation: fadeInLog 0.5s forwards;
-            font-size: 0.9rem;
-        }
-        .terminal-logs p:nth-child(1) { animation-delay: 0.2s; }
-        .terminal-logs p:nth-child(2) { animation-delay: 1.0s; }
-        .terminal-logs p:nth-child(3) { animation-delay: 1.8s; }
-        .terminal-logs p:nth-child(4) { animation-delay: 2.6s; }
-
-        .loading-bar {
-            font-size: 1rem;
-            opacity: 0.8;
-            word-break: break-all;
-        }
-
-        @keyframes fadeInLog { to { opacity: 1; } }
-
-        /* --- SYSTEM STATUS EFFECTS --- */
-        .system-status {
-            font-family: var(--font-mono);
-            margin-bottom: 20px;
-            color: #008000; 
-            animation: slowBlink 3s infinite;
-        }
-
-        @keyframes slowBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* --- GLOBAL LAYOUT --- */
-        .grid-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            background-color: var(--container-bg);
-            backdrop-filter: blur(2px);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            opacity: 0; 
-            transition: opacity 1s ease, background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, text-shadow 0.2s ease, transform 0.2s ease;
-        }
-
+      /* --- MOBILE OPTIMIZATIONS --- */
+      @media (max-width: 768px) {
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            min-height: 70px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--accent-color);
-            position: relative;
-            z-index: 10;
-            transition: background 0.5s ease;
+          flex-direction: column;
+          height: auto;
+          align-items: stretch;
         }
-        
-        body:not(.inverted) header { color: white; }
-        body.inverted header { background: #ffffff; border-bottom: 1px solid #000; }
-        body.inverted header .logo, body.inverted nav button { color: #000; }
-
-        /* --- TERMINAL COLOR MODES --- */
-        body.theme-blue {
-            --bg-body: #020617;              /* deep navy */
-            --dot-color: #020617;
-            --container-bg: rgba(2, 6, 23, 0.92);
-            --text-color: #60a5fa;           /* terminal blue */
-            --border-color: #3b82f6;
-            --accent-color: #020617;
-        }
-
-        body.theme-green {
-            --bg-body: #020c07;              /* dark phosphor green */
-            --dot-color: #020c07;
-            --container-bg: rgba(2, 12, 7, 0.92);
-            --text-color: #22c55e;           /* terminal green */
-            --border-color: #16a34a;
-            --accent-color: #020c07;
-        }
-
-
         .logo {
-            padding: 0 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            border-right: 1px solid var(--border-color);
-            cursor: pointer;
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+          justify-content: center;
+          width: 100%;
         }
-
-        nav ul { display: flex; list-style: none; height: 70px; }
-        nav li { height: 100%; border-left: 1px solid var(--border-color); }
-        
+        nav ul {
+          width: 100%;
+          justify-content: space-around;
+        }
+        nav li {
+          border-left: none;
+          flex: 1;
+        }
         nav button {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            padding: 0 25px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            font-family: var(--font-mono);
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.3s, color 0.3s;
+          width: 100%;
+          padding: 0;
+          justify-content: center;
+          font-size: 0.7rem;
         }
 
-        nav button:hover { 
-            background: var(--border-color); 
-            color: var(--accent-color); 
+        #dynamic-view.view-home,
+        #dynamic-view.view-events,
+        #dynamic-view.view-team {
+          display: flex;
+          flex-direction: column;
         }
 
-        #dynamic-view {
-            flex: 1;
-            display: grid;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-            height: calc(100vh - 70px - 40px);
-            overflow: hidden;
+        .hero-title {
+          font-size: 10vw;
         }
-
-        #dynamic-view.view-home { grid-template-columns: 3fr 1fr; }
-        #dynamic-view.view-events { grid-template-columns: 1fr 1fr 1fr; }
-        #dynamic-view.view-team { 
-            grid-template-columns: 1fr 1fr 1fr; 
-            grid-template-rows: auto;
+        .hero-title-wrapper {
+          height: 50vw;
+          overflow: hidden;
         }
-
-
-        /* --- ABOUT MODULE --- */
-        #dynamic-view.view-about {
-                grid-template-columns: 1.5fr 1fr;
-            }
-
-            .about-manifest h1 {
-                font-size: 3.2rem;
-                line-height: 1.05;
-                letter-spacing: -1px;
-            }
-
-        #dynamic-view.view-archive {
-            grid-template-columns: 1fr;
-        }
-
-        #dynamic-view.view-archive .archive-panel {
-            height: 100%;
-            padding: 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* This creates the visual 90% height safely */
-        .archive-stage {
-            position: absolute;
-            inset: 0;
-        }
-
-
-        /* Canvas truly fills usable space */
-        .archive-stage canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-
-            .about-manifest p {
-                font-family: var(--font-mono);
-                font-size: 0.85rem;
-                margin-top: 20px;
-                opacity: 0.9;
-                max-width: 90%;
-            }
-
-            .system-manifest {
-                font-family: var(--font-mono);
-                font-size: 0.8rem;
-            }
-
-            .manifest-entry {
-                padding: 12px 0;
-                border-bottom: 1px dashed var(--border-color);
-            }
-
-            .manifest-label {
-                opacity: 0.4;
-                text-transform: uppercase;
-            }
-
-            .manifest-value {
-                font-size: 0.9rem;
-                letter-spacing: 0.5px;
-            }
-
 
         .content-panel {
-            padding: 30px;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            position: relative;
-            min-height: 300px;
+          border-right: none !important;
+          border-bottom: 1px solid var(--border-color) !important;
+          min-height: auto;
+          padding: 40px 20px;
         }
-        
-        .view-events .content-panel:nth-child(3) { border-right: none; }
-        .view-team .content-panel:nth-child(3n) { border-right: none; }
-        .view-team .content-panel:nth-child(n+4) { border-top: 1px solid var(--border-color); }
-
-        .visible { opacity: 1; }
-
-        h1, h2, h3 { font-family: var(--font-mono); text-transform: uppercase; font-weight: normal; }
-        
-        .hero-title-wrapper { 
-            min-height: 20rem; 
-            margin-bottom: 20px; 
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hero-title { font-size: 4rem; line-height: 1.1; letter-spacing: -2px; }
-        .big-char { font-size: 1.5em; font-weight: normal; color: var(--text-color); line-height: 1; }
-        .small-text { font-size: 0.7em; opacity: 0.9; }
-        
-        .cursor { 
-            display: inline-block; 
-            background-color: var(--text-color); 
-            width: 5px; 
-            height: 1em; 
-            margin-left: 5px; 
-            animation: blink 1s infinite; 
-            vertical-align: baseline;
-        }
-
-        .event-card, .team-card { height: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
-        
-        /* Team Card Layout */
-        .team-card {
-            display: flex;
-            flex-direction: row; 
-            gap: 20px;
-            align-items: flex-start;
-        }
-
-        /* MATCHED HEIGHT: Text container height matches new image height (200px) */
-                .team-details {
-            display: flex;
-            flex-direction: column;
-            height: 200px; /* This must match your image height */
-            justify-content: flex-start; /* Aligns ID to the top */
-            flex: 1;
-        }
-
-        .team-name-group {
-            margin-top: auto; /* This pushes the name group to the very bottom */
-        }
-
-        .team-separator {
-            width: 100%;
-            height: 1px;
-            background-color: var(--text-color);
-            opacity: 0.6;
-            margin: 8px 0;
-        }
-
-        .event-number { font-family: var(--font-mono); font-size: 3rem; opacity: 0.2; margin-bottom: 20px; }
-        
         .scroll-arrow {
-            position: absolute;
-            right: 24px;
-            bottom: 24px;
-
-            width: 50px;
-            height: 50px;
-
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-            background: var(--accent-color);
-            color: var(--text-color);
-
-            font-family: var(--font-mono);
-            font-weight: bold;
-
-            z-index: 100;
-            pointer-events: auto;
-
-            transition: all 0.3s ease;
+          position: fixed;
+          bottom: 80px;
+          right: 20px;
+          width: 45px;
+          height: 45px;
         }
-
-        
-        body:not(.inverted) .scroll-arrow { background: black; color: white; border-color: white; }
-        body:not(.inverted) .scroll-arrow:hover { background: white; color: black; }
-        body.inverted .scroll-arrow { background: white; color: black; border-color: black; }
-        body.inverted .scroll-arrow:hover { background: black; color: white; }
-
-        .date { font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.7; display: block; }
-        .role { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.8; display: block; text-transform: uppercase; }
-        
-        .section-header { 
-            padding: 15px 20px; 
-            border-bottom: 1px solid var(--border-color); 
-            background: var(--accent-color); 
-            color: var(--text-color);
-            font-family: var(--font-mono); 
-            font-size: 0.9rem; 
-            transition: all 0.3s ease;
-        }
-        body.inverted .section-header { background: #fff; color: #000; }
-
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* --- WAVE & TOOLTIP --- */
         .wave-container {
-            height: 60px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            background: var(--accent-color);
-            position: relative;
-            cursor: crosshair;
+          display: flex;
         }
-        body.inverted .wave-container { background: #fff; }
-
-        .wave-svg { width: 100%; height: 100%; }
-        .wave-path {
-            fill: none;
-            stroke: var(--text-color);
-            stroke-width: 2;
-            vector-effect: non-scaling-stroke;
+        .terminal-logs {
+          font-size: 0.7rem;
         }
 
-        .wave-tooltip {
-            position: absolute;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 4px 8px;
-            font-family: var(--font-mono);
+            .scroll-next {
+            right: 20px;
+        }
+
+        .scroll-prev {
+            right: 70px;
+        }
+      }
+
+      /* === CONTACT FIELD (SCOPED) === */
+
+      .view-contact {
+        grid-template-columns: 1fr 1.5fr;
+      }
+
+      .contact-list {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+      }
+
+      .contact-section {
+        margin-bottom: 30px;
+      }
+
+      .contact-section-title {
+        opacity: 0.4;
+        margin-bottom: 10px;
+      }
+
+      .contact-node {
+        cursor: pointer;
+        opacity: 0.7;
+        padding: 4px 0;
+      }
+
+      .contact-node:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+
+      .contact-details {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        white-space: pre-line;
+      }
+
+      .contact-socials a {
+        margin-right: 10px;
+        text-decoration: none;
+        opacity: 0.7;
+      }
+
+      .contact-socials a:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+
+      /* === ARCHIVE CAPTION BOX === */
+
+/* === ARCHIVE CAPTION BOX (RELATIVE & OFFSET-SAFE) === */
+
+    .archive-caption {
+        position: absolute;
+
+        right: 4%;
+        bottom: 12%;
+
+        transform: translateY(-12px);
+
+        max-width: 32%;
+        min-width: 240px;
+
+        padding: 16px 18px;
+
+        border: 1px solid var(--border-color);
+        background: var(--container-bg);
+
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1.5;
+
+        pointer-events: none;
+        overflow: hidden;
+
+        z-index: 5;
+    }
+
+      @media (max-width: 768px) {
+        .archive-caption {
+            left: 6%;
+            right: 6%;
+            bottom: 10%;
+
+            transform: translateY(-10px);
+
+            max-width: none;
             font-size: 0.7rem;
-            pointer-events: none;
-            white-space: nowrap;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 0 10px rgba(125,125,125,0.2);
         }
-
-        /* --- MOBILE OPTIMIZATIONS --- */
-        @media (max-width: 768px) {
-            header { flex-direction: column; height: auto; align-items: stretch; }
-            .logo { border-right: none; border-bottom: 1px solid var(--border-color); justify-content: center; width: 100%; }
-            nav ul { width: 100%; justify-content: space-around; }
-            nav li { border-left: none; flex: 1; }
-            nav button { width: 100%; padding: 0; justify-content: center; font-size: 0.7rem; }
-
-            #dynamic-view.view-home, #dynamic-view.view-events, #dynamic-view.view-team { 
-                display: flex; flex-direction: column;
-            }
-            
-            .hero-title { font-size: 10vw; }
-            .hero-title-wrapper { height: 50vw; overflow: hidden; } 
-
-            .content-panel { 
-                border-right: none !important; 
-                border-bottom: 1px solid var(--border-color) !important; 
-                min-height: auto;
-                padding: 40px 20px;
-            }
-            .scroll-arrow { position: fixed; bottom: 80px; right: 20px; width: 45px; height: 45px; }
-            .wave-container { display: flex; }
-            .terminal-logs { font-size: 0.7rem; }
-        }
-
-        /* === CONTACT FIELD (SCOPED) === */
-
-        .view-contact {
-            grid-template-columns: 1fr 1.5fr;
-        }
-
-        .contact-list {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-        }
-
-        .contact-section {
-            margin-bottom: 30px;
-        }
-
-        .contact-section-title {
-            opacity: 0.4;
-            margin-bottom: 10px;
-        }
-
-        .contact-node {
-            cursor: pointer;
-            opacity: 0.7;
-            padding: 4px 0;
-        }
-
-        .contact-node:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        .contact-details {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            white-space: pre-line;
-        }
-
-        .contact-socials a {
-            margin-right: 10px;
-            text-decoration: none;
-            opacity: 0.7;
-        }
-
-        .contact-socials a:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
+    }
 
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <canvas id="dot-canvas"></canvas>
     <div id="preloader">
-        <div class="terminal-logs">
-            <p>> CONFIGURING TERMINAL...</p>
-            <p>> TERMINAL EXHIBITS: DOPPLER_SHIFT, SCHRODINGER_GLITCH</p>
-            <p>> ENTER 'light' FOR INVERSION || TAP(4) FOR INVERSION</p>
-            <p>> COLOR_CHANNELS: TYPE 'BLUE' OR 'GREEN' TO SHIFT ACCENT</p>
-        </div>
-        <div class="loading-bar">
-            SYSTEM_BOOT: <span id="loader-line"></span>
-        </div>
+      <div class="terminal-logs">
+        <p>> CONFIGURING TERMINAL...</p>
+        <p>> TERMINAL EXHIBITS: DOPPLER_SHIFT, SCHRODINGER_GLITCH</p>
+        <p>> ENTER 'light' FOR INVERSION || TAP(4) FOR INVERSION</p>
+        <p>> COLOR_CHANNELS: TYPE 'BLUE' OR 'GREEN' TO SHIFT ACCENT</p>
+      </div>
+      <div class="loading-bar">SYSTEM_BOOT: <span id="loader-line"></span></div>
     </div>
 
     <div class="grid-container" id="main-interface">
-        <header>
-            <div class="logo" onclick="loadPage('home')">PHYSTEO_NITH</div>
-            <nav>
-                <ul>
-                    <li><button onclick="loadPage('events')">EVENTS</button></li>
-                    <li><button onclick="loadPage('team')">TEAM</button></li>
-                    <li><button onclick="loadPage('about')">ABOUT</button></li>
-                    <li><button onclick="loadPage('archive')">ARCHIVE</button></li>
-                    <li><button onclick="loadPage('contact')">CONTACT</button></li>
-                </ul>
-            </nav>
-        </header>
+      <header>
+        <div class="logo" onclick="loadPage('home')">PHYSTEO_NITH</div>
+        <nav>
+          <ul>
+            <li><button onclick="loadPage('events')">EVENTS</button></li>
+            <li><button onclick="loadPage('team')">TEAM</button></li>
+            <li><button onclick="loadPage('about')">ABOUT</button></li>
+            <li><button onclick="loadPage('archive')">ARCHIVE</button></li>
+            <li><button onclick="loadPage('contact')">CONTACT</button></li>
+          </ul>
+        </nav>
+      </header>
 
-        <section id="dynamic-view" class="view-home"></section>
+      <section id="dynamic-view" class="view-home"></section>
 
-        <div class="section-header" id="status-bar">
-            // DATA_LOG: SYSTEM_READY
-        </div>
+      <div class="section-header" id="status-bar">
+        // DATA_LOG: SYSTEM_READY
+      </div>
     </div>
 
     <script>
-        /* === DOT CANVAS SYSTEM === */
+      /* === DOT CANVAS SYSTEM === */
 
-            const dotCanvas = document.getElementById("dot-canvas");
-            const dotCtx = dotCanvas.getContext("2d");
+      const dotCanvas = document.getElementById("dot-canvas");
+      const dotCtx = dotCanvas.getContext("2d");
 
-            function resizeCanvas() {
-                dotCanvas.width = window.innerWidth;
-                dotCanvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener("resize", resizeCanvas);
+      function resizeCanvas() {
+        dotCanvas.width = window.innerWidth;
+        dotCanvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
 
-            const DOT_SPACING = 8;
-            const DOT_SIZE = 2;
-            const dots = [];
+      const DOT_SPACING = 8;
+      const DOT_SIZE = 2;
+      const dots = [];
 
-            function createDots() {
-                dots.length = 0;
-                for (let y = 0; y < dotCanvas.height; y += DOT_SPACING) {
-                    for (let x = 0; x < dotCanvas.width; x += DOT_SPACING) {
-                        dots.push({
-                            x, y,
-                            tx: x, ty: y
-                        });
-                    }
-                }
-            }
-            createDots();
-
-            const logoImg = new Image();
-            logoImg.src = "./images/physteo-logo.png";
-
-            let logoReady = false;
-            let logoPoints = [];
-
-            logoImg.onload = () => {
-                const temp = document.createElement("canvas");
-                const tctx = temp.getContext("2d");
-
-                const SIZE = 300;
-                temp.width = SIZE;
-                temp.height = SIZE;
-
-                tctx.drawImage(logoImg, 0, 0, SIZE, SIZE);
-                const imgData = tctx.getImageData(0, 0, SIZE, SIZE).data;
-
-                for (let y = 0; y < SIZE; y += 3) {
-                    for (let x = 0; x < SIZE; x += 3) {
-                        if (imgData[(y * SIZE + x) * 4 + 3] > 150) {
-                            logoPoints.push({
-                                x: x + dotCanvas.width / 2 - SIZE / 2,
-                                y: y + dotCanvas.height / 2 - SIZE / 2
-                            });
-                        }
-                    }
-                }
-                logoReady = true;
-            };
-
-            function assignLogoTargets() {
-                dots.forEach((d, i) => {
-                    const p = logoPoints[i % logoPoints.length];
-                    d.tx = p.x;
-                    d.ty = p.y;
-                });
-            }
-
-
-            let dotAlpha = 1;
-            let morphing = false;
-
-            function animateDots() {
-                dotCtx.fillStyle = "#000";
-                dotCtx.fillRect(0, 0, dotCanvas.width, dotCanvas.height);
-                dotCtx.globalAlpha = dotAlpha;
-                dotCtx.fillStyle = "#fff";
-                dots.forEach(d => {
-                    d.x += (d.tx - d.x) * 0.06;
-                    d.y += (d.ty - d.y) * 0.08;
-                    dotCtx.fillRect(d.x, d.y, DOT_SIZE, DOT_SIZE);
-                });
-
-                if (morphing) {
-                    if (dotAlpha > 0.4) {
-                        dotAlpha -= 0.0015;   // very slow fade during morph
-                    } else {
-                        dotAlpha -= 0.03;     // fast disappear after lock
-                    }
-
-                    if (dotAlpha <= 0) {
-                        dotCanvas.style.display = "none";
-                        return;
-                    }
-                }
-
-                requestAnimationFrame(animateDots);
-            }
-
-            animateDots();
-
-
-            let archiveDots = [];
-            let archiveTargets = [];
-            let archiveCanvas, archiveCtx;
-
-            let archiveRAF;
-
-            function startArchiveMorph(imgSrc) {
-                
-                                if (archiveRAF) {
-                    cancelAnimationFrame(archiveRAF);
-                    archiveRAF = null;
-                }
-
-                archiveCanvas = document.getElementById("archive-canvas");
-                if (!archiveCanvas) return;
-
-                archiveCtx = archiveCanvas.getContext("2d");
-
-                const rect = archiveCanvas.getBoundingClientRect();
-                const dpr = window.devicePixelRatio || 1;
-
-                archiveCanvas.width  = rect.width * dpr;
-                archiveCanvas.height = rect.height * dpr;
-
-                archiveCanvas.style.width  = rect.width + "px";
-                archiveCanvas.style.height = rect.height + "px";
-
-                archiveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-                const SAMPLE_GAP = 4;
-                const STAGE_SIZE = Math.min(rect.width, rect.height);
-
-                function imageToPoints(img) {
-                    const temp = document.createElement("canvas");
-                    const tctx = temp.getContext("2d");
-
-                    temp.width  = img.width;
-                    temp.height = img.height;
-                    tctx.drawImage(img, 0, 0);
-
-                    const data = tctx.getImageData(0, 0, img.width, img.height).data;
-                    const pts = [];
-
-                    for (let y = 0; y < img.height; y += SAMPLE_GAP) {
-                        for (let x = 0; x < img.width; x += SAMPLE_GAP) {
-                            if (data[(y * img.width + x) * 4 + 3] > 128) {
-                                pts.push({ x, y });
-                            }
-                        }
-                    }
-                    return pts;
-                }
-
-                function fitToArchiveStage(points) {
-                    let minX = Infinity, minY = Infinity;
-                    let maxX = -Infinity, maxY = -Infinity;
-
-                    points.forEach(p => {
-                        minX = Math.min(minX, p.x);
-                        minY = Math.min(minY, p.y);
-                        maxX = Math.max(maxX, p.x);
-                        maxY = Math.max(maxY, p.y);
-                    });
-
-                    const scale = Math.min(
-                        STAGE_SIZE / (maxX - minX),
-                        STAGE_SIZE / (maxY - minY),
-                        1
-                    );
-
-                    const ox = rect.width  / 2 - (minX + (maxX - minX) / 2) * scale;
-                    const oy = rect.height / 2 - (minY + (maxY - minY) / 2) * scale;
-
-                    return points.map(p => ({
-                        x: p.x * scale + ox,
-                        y: p.y * scale + oy
-                    }));
-                }
-
-
-                    const img = archiveImageCache[currentArchiveIndex];
-
-                    // Fallback (safety)
-                    if (!img) {
-                        const fallback = new Image();
-                        fallback.src = imgSrc;
-                        fallback.onload = () => processArchiveImage(fallback);
-                        animateArchiveDots();
-                        return;
-                    }
-
-
-                function processArchiveImage(image) {
-                    const targets = fitToArchiveStage(imageToPoints(image));
-                    archiveDots = Array.from({ length: targets.length }, () => ({
-                        x: rect.width / 2,
-                        y: rect.height / 2,
-                        tx: 0,
-                        ty: 0
-                    }));
-
-                    archiveDots.forEach((d, i) => {
-                        d.tx = targets[i].x;
-                        d.ty = targets[i].y;
-                    });
-
-                    animateArchiveDots();
-                }
-
-
-                // If already decoded, run immediately
-                if (img.complete) {
-                    processArchiveImage(img);
-                } else {
-                    img.onload = () => processArchiveImage(img);
-                }
-
+      function createDots() {
+        dots.length = 0;
+        for (let y = 0; y < dotCanvas.height; y += DOT_SPACING) {
+          for (let x = 0; x < dotCanvas.width; x += DOT_SPACING) {
+            dots.push({
+              x,
+              y,
+              tx: x,
+              ty: y,
+            });
+          }
         }
+      }
+      createDots();
 
+      const logoImg = new Image();
+      logoImg.src = "./images/physteo-logo.png";
 
+      let logoReady = false;
+      let logoPoints = [];
 
-            function animateArchiveDots() {
-                if (!archiveCtx) return;
+      logoImg.onload = () => {
+        const temp = document.createElement("canvas");
+        const tctx = temp.getContext("2d");
 
-                cancelAnimationFrame(archiveRAF);
+        const SIZE = 300;
+        temp.width = SIZE;
+        temp.height = SIZE;
 
-                function loop() {
-                    archiveCtx.clearRect(0, 0, archiveCanvas.width, archiveCanvas.height);
-                    archiveCtx.fillStyle = "#fff";
+        tctx.drawImage(logoImg, 0, 0, SIZE, SIZE);
+        const imgData = tctx.getImageData(0, 0, SIZE, SIZE).data;
 
-                    archiveDots.forEach(d => {
-                        d.x += (d.tx - d.x) * 0.08;
-                        d.y += (d.ty - d.y) * 0.08;
-
-                        archiveCtx.beginPath();
-                        archiveCtx.arc(d.x, d.y, 1, 0, Math.PI * 2);
-                        archiveCtx.fill();
-                    });
-
-                    archiveRAF = requestAnimationFrame(loop);
-                }
-
-                loop();
+        for (let y = 0; y < SIZE; y += 3) {
+          for (let x = 0; x < SIZE; x += 3) {
+            if (imgData[(y * SIZE + x) * 4 + 3] > 150) {
+              logoPoints.push({
+                x: x + dotCanvas.width / 2 - SIZE / 2,
+                y: y + dotCanvas.height / 2 - SIZE / 2,
+              });
             }
-
-
-
-        // Scripts remain identical to the previous version, just handling the new CSS layout...
-        let uptime = 0;
-        let lastScrollY = window.scrollY;
-        setInterval(() => uptime++, 1000);
-
-        function updateStatusBar(msg) {
-            const statusEl = document.getElementById('status-bar');
-            if (statusEl) statusEl.innerText = `// DATA_LOG: ${msg}`;
+          }
         }
+        logoReady = true;
+      };
 
-        function resetStatus() {
-            const currentClass = viewContainer.className;
-            const moduleName = currentClass ? currentClass.split('-')[1].toUpperCase() : "NULL";
-            updateStatusBar(`MODULE_[${moduleName}]_ACTIVE | UPTIME: ${uptime}s`);
-        }
+      function assignLogoTargets() {
+        dots.forEach((d, i) => {
+          const p = logoPoints[i % logoPoints.length];
+          d.tx = p.x;
+          d.ty = p.y;
+        });
+      }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const loaderLine = document.getElementById('loader-line');
-            const preloader = document.getElementById('preloader');
-            const mainInterface = document.getElementById('main-interface');
-            let loadProgress = "";
-            let steps = 0;
-            const loadingInterval = setInterval(() => {
-                loadProgress += "-";
-                loaderLine.innerText = loadProgress;
-                steps++;
-                if (steps > 75) {
-                clearInterval(loadingInterval);
+      let dotAlpha = 1;
+      let morphing = false;
 
-                if (logoReady) {
-                    assignLogoTargets();
-                    morphing = true;
-                }
-
-                // Warm up archive images after boot
-                if ('requestIdleCallback' in window) {
-                    requestIdleCallback(preloadArchiveImages);
-                } else {
-                    setTimeout(preloadArchiveImages, 1500);
-                }
-
-                preloader.style.opacity = "0";
-                                setTimeout(() => {
-                        preloader.style.display = "none";
-                        mainInterface.style.opacity = "1";
-                        loadPage('home');
-                    }, 800);
-                }
-            }, 80);
+      function animateDots() {
+        dotCtx.fillStyle = "#000";
+        dotCtx.fillRect(0, 0, dotCanvas.width, dotCanvas.height);
+        dotCtx.globalAlpha = dotAlpha;
+        dotCtx.fillStyle = "#fff";
+        dots.forEach((d) => {
+          d.x += (d.tx - d.x) * 0.06;
+          d.y += (d.ty - d.y) * 0.08;
+          dotCtx.fillRect(d.x, d.y, DOT_SIZE, DOT_SIZE);
         });
 
-        const eventsDB = [
-            [
-                { date: "NOV 25", num: "01", title: "SINGULARITY<br>TALK", desc: "// Deep dive into Black Hole Thermodynamics.", img: null },
-                { date: "DEC 02", num: "02", title: "TELESCOPE<br>NIGHT", desc: "// Observation session at the OAT.", img: null },
-                { date: "TBA", num: "03", title: "QUANTUM<br>WORKSHOP", desc: "// Intro to Q-Computing.", img: null }
-            ],
-            [
-                { date: "JAN 15", num: "04", title: "DARK MATTER<br>SYMPOSIUM", desc: "// Investigating the missing mass.", img: null },
-                { date: "FEB 10", num: "05", title: "ROCKETRY<br>101", desc: "// Propulsion systems basics.", img: null },
-                { date: "MAR 05", num: "06", title: "STRING<br>THEORY", desc: "// Unifying the fundamental forces.", img: null }
-            ]
-        ];
+        if (morphing) {
+          if (dotAlpha > 0.4) {
+            dotAlpha -= 0.0015; // very slow fade during morph
+          } else {
+            dotAlpha -= 0.03; // fast disappear after lock
+          }
 
-        const teamDB = [
-            [
-                { role: "PRESIDENT", name: "AYUSH<br>SHARMA",resolve:"THE PRES.", img: null },
-                { role: "VICE PRESIDENT", name: "SAHIL<br>RANA",resolve:"V.P.", img: null },
-                { role: "FINANCE HEAD", name: "AYUSH<br>ABHYUDAYA",resolve:"FINANCIAL BOSS", img: null },
-                { role: "TECHNICAL HEAD", name: "SAMBHAV\u200B\u200B",resolve: "TECH GURU", img: null },
-                { role: "PR HEAD", name: "PEEYUSH<br>SHARMA",resolve:"STRONG PR", img: null },
-                { role: "CREATIVE HEAD", name: "AKSHAT<br>DIMRI",resolve:"MAX CREATIVE", img: "./images/akshat.jpg" }
-            ],
-            [
-                { role: "EXEC MEMBER", name: "RANDOM<br>PERSON", img: null },
-                { role: "EXEC MEMBER", name: "ANOTHER<br>PERSON", img: null },
-                { role: "EXEC MEMBER", name: "SOMEONE<br>ELSE", img: null },
-                { role: "EXEC MEMBER", name: "ANOTHER<br>RANDOM", img: null },
-                { role: "EXEC MEMBER", name: "PLACEHOLDER<br>PERSON", img: null },
-                { role: "EXEC MEMBER", name: "LAST<br>HUMAN", img: null }
-            ]
-        ];
-
-        const archiveDB = [
-            { img: "./images/png_1.png" },
-            { img: "./images/png_2.png" },
-            { img: "./images/png_3.png" },
-            { img: "./images/logo2.png" }
-        ];
-
-        // === ARCHIVE IMAGE PRE-DECODE CACHE ===
-        const archiveImageCache = [];
-
-        function preloadArchiveImages() {
-            archiveDB.forEach(item => {
-                const img = new Image();
-                img.src = item.img;
-
-                // Hints for mobile browsers
-                img.decoding = "async";
-                img.loading = "eager";
-
-                archiveImageCache.push(img);
-            });
+          if (dotAlpha <= 0) {
+            dotCanvas.style.display = "none";
+            return;
+          }
         }
 
+        requestAnimationFrame(animateDots);
+      }
 
-        let currentArchiveIndex = 0;
+      animateDots();
 
-        const contactDB = {
-            core: [
-                {
-                    name: "AYUSH SHARMA",
-                    role: "PRESIDENT",
-                    phone: "+91 98350 35190",
-                    email: "ayush@physteo.in",
-                    socials: {
-                        IG: "#",
-                        IN: "#",
-                        GH: "#"
-                    }
-                },
-                {
-                    name: "SAHIL RANA",
-                    role: "VICE PRESIDENT",
-                    phone: "+91 98161 62477",
-                    email: "sahil@physteo.in",
-                    socials: {
-                        IG: "#",
-                        IN: "#"
-                    }
-                },
-                {
-                    name: "AKSHAT DIMRI",
-                    role: "CREATIVE HEAD",
-                    phone: "+91 XXXXXXXX",
-                    email: "akshat@physteo.in",
-                    socials: {
-                        IG: "#",
-                        IN: "#"
-                    }
-                }
-            ],
-            exec: [
-                { name: "RANDOM PERSON" },
-                { name: "ANOTHER PERSON" },
-                { name: "SOMEONE ELSE" }
-            ],
-            society: {
-                IG: "https://www.instagram.com/physteo/",
-                IN: "#",
-                EMAIL: "physteo@nith.ac.in"
+      let archiveDots = [];
+      let archiveTargets = [];
+      let archiveCanvas, archiveCtx;
+
+      let archiveRAF;
+
+      function startArchiveMorph(imgSrc) {
+        if (archiveRAF) {
+          cancelAnimationFrame(archiveRAF);
+          archiveRAF = null;
+        }
+
+        archiveCanvas = document.getElementById("archive-canvas");
+        if (!archiveCanvas) return;
+
+        archiveCtx = archiveCanvas.getContext("2d");
+
+        const rect = archiveCanvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+
+        archiveCanvas.width = rect.width * dpr;
+        archiveCanvas.height = rect.height * dpr;
+
+        archiveCanvas.style.width = rect.width + "px";
+        archiveCanvas.style.height = rect.height + "px";
+
+        archiveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const SAMPLE_GAP = 4;
+        const STAGE_SIZE = Math.min(rect.width, rect.height);
+
+        function imageToPoints(img) {
+          const temp = document.createElement("canvas");
+          const tctx = temp.getContext("2d");
+
+          temp.width = img.width;
+          temp.height = img.height;
+          tctx.drawImage(img, 0, 0);
+
+          const data = tctx.getImageData(0, 0, img.width, img.height).data;
+          const pts = [];
+
+          for (let y = 0; y < img.height; y += SAMPLE_GAP) {
+            for (let x = 0; x < img.width; x += SAMPLE_GAP) {
+              if (data[(y * img.width + x) * 4 + 3] > 128) {
+                pts.push({ x, y });
+              }
             }
-        };
-
-
-        let currentEventPage = 0;
-        let currentTeamPage = 0;
-        const viewContainer = document.getElementById('dynamic-view');
-
-        function loadPage(pageName) {
-            updateStatusBar(`LOADING_MODULE_[${pageName.toUpperCase()}]...`);
-            viewContainer.innerHTML = '';
-            viewContainer.className = `view-${pageName}`; 
-            setTimeout(() => {
-                if (pageName === 'home') renderHome();
-                else if (pageName === 'events') { currentEventPage = 0; renderEvents(currentEventPage); }
-                else if (pageName === 'team') { currentTeamPage = 0; renderTeam(currentTeamPage); }
-                else if (pageName === 'about') renderAbout();
-                else if (pageName === 'archive') { currentArchiveIndex = 0; renderArchive(currentArchiveIndex);}
-                else if (pageName === 'contact') renderContact();
-                document.querySelectorAll('.content-panel').forEach((panel, i) => {
-                    setTimeout(() => panel.classList.add('visible'), i * 100);
-                });
-                resetStatus();
-            }, 400);
+          }
+          return pts;
         }
 
-        function renderHome() {
-            viewContainer.innerHTML = `
+        function fitToArchiveStage(points) {
+          let minX = Infinity,
+            minY = Infinity;
+          let maxX = -Infinity,
+            maxY = -Infinity;
+
+          points.forEach((p) => {
+            minX = Math.min(minX, p.x);
+            minY = Math.min(minY, p.y);
+            maxX = Math.max(maxX, p.x);
+            maxY = Math.max(maxY, p.y);
+          });
+
+          const scale = Math.min(
+            STAGE_SIZE / (maxX - minX),
+            STAGE_SIZE / (maxY - minY),
+            1
+          );
+
+          const ox = rect.width / 2 - (minX + (maxX - minX) / 2) * scale;
+          const oy = rect.height / 2 - (minY + (maxY - minY) / 2) * scale;
+
+          return points.map((p) => ({
+            x: p.x * scale + ox,
+            y: p.y * scale + oy,
+          }));
+        }
+
+        const img = archiveImageCache[currentArchiveIndex];
+
+        // Fallback (safety)
+        if (!img) {
+          const fallback = new Image();
+          fallback.src = imgSrc;
+          fallback.onload = () => processArchiveImage(fallback);
+          animateArchiveDots();
+          return;
+        }
+
+        function processArchiveImage(image) {
+          const targets = fitToArchiveStage(imageToPoints(image));
+          archiveDots = Array.from({ length: targets.length }, () => ({
+            x: rect.width / 2,
+            y: rect.height / 2,
+            tx: 0,
+            ty: 0,
+          }));
+
+          archiveDots.forEach((d, i) => {
+            d.tx = targets[i].x;
+            d.ty = targets[i].y;
+          });
+
+          animateArchiveDots();
+        }
+
+        // If already decoded, run immediately
+        if (img.complete) {
+          processArchiveImage(img);
+        } else {
+          img.onload = () => processArchiveImage(img);
+        }
+      }
+
+      function animateArchiveDots() {
+        if (!archiveCtx) return;
+
+        cancelAnimationFrame(archiveRAF);
+
+        function loop() {
+          archiveCtx.clearRect(0, 0, archiveCanvas.width, archiveCanvas.height);
+          archiveCtx.fillStyle = "#fff";
+
+          archiveDots.forEach((d) => {
+            d.x += (d.tx - d.x) * 0.08;
+            d.y += (d.ty - d.y) * 0.08;
+
+            archiveCtx.beginPath();
+            archiveCtx.arc(d.x, d.y, 1, 0, Math.PI * 2);
+            archiveCtx.fill();
+          });
+
+          archiveRAF = requestAnimationFrame(loop);
+        }
+
+        loop();
+      }
+
+      // Scripts remain identical to the previous version, just handling the new CSS layout...
+      let uptime = 0;
+      let lastScrollY = window.scrollY;
+      setInterval(() => uptime++, 1000);
+
+      function updateStatusBar(msg) {
+        const statusEl = document.getElementById("status-bar");
+        if (statusEl) statusEl.innerText = `// DATA_LOG: ${msg}`;
+      }
+
+      function resetStatus() {
+        const currentClass = viewContainer.className;
+        const moduleName = currentClass
+          ? currentClass.split("-")[1].toUpperCase()
+          : "NULL";
+        updateStatusBar(`MODULE_[${moduleName}]_ACTIVE | UPTIME: ${uptime}s`);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const loaderLine = document.getElementById("loader-line");
+        const preloader = document.getElementById("preloader");
+        const mainInterface = document.getElementById("main-interface");
+        let loadProgress = "";
+        let steps = 0;
+        const loadingInterval = setInterval(() => {
+          loadProgress += "-";
+          loaderLine.innerText = loadProgress;
+          steps++;
+          if (steps > 75) {
+            clearInterval(loadingInterval);
+
+            if (logoReady) {
+              assignLogoTargets();
+              morphing = true;
+            }
+
+            // Warm up archive images after boot
+            if ("requestIdleCallback" in window) {
+              requestIdleCallback(preloadArchiveImages);
+            } else {
+              setTimeout(preloadArchiveImages, 1500);
+            }
+
+            preloader.style.opacity = "0";
+            setTimeout(() => {
+              preloader.style.display = "none";
+              mainInterface.style.opacity = "1";
+              loadPage("home");
+            }, 800);
+          }
+        }, 80);
+      });
+
+      const eventsDB = [
+        [
+          {
+            date: "NOV 25",
+            num: "01",
+            title: "SINGULARITY<br>TALK",
+            desc: "// Deep dive into Black Hole Thermodynamics.",
+            img: null,
+          },
+          {
+            date: "DEC 02",
+            num: "02",
+            title: "TELESCOPE<br>NIGHT",
+            desc: "// Observation session at the OAT.",
+            img: null,
+          },
+          {
+            date: "TBA",
+            num: "03",
+            title: "QUANTUM<br>WORKSHOP",
+            desc: "// Intro to Q-Computing.",
+            img: null,
+          },
+        ],
+        [
+          {
+            date: "JAN 15",
+            num: "04",
+            title: "DARK MATTER<br>SYMPOSIUM",
+            desc: "// Investigating the missing mass.",
+            img: null,
+          },
+          {
+            date: "FEB 10",
+            num: "05",
+            title: "ROCKETRY<br>101",
+            desc: "// Propulsion systems basics.",
+            img: null,
+          },
+          {
+            date: "MAR 05",
+            num: "06",
+            title: "STRING<br>THEORY",
+            desc: "// Unifying the fundamental forces.",
+            img: null,
+          },
+        ],
+      ];
+
+      const teamDB = [
+        [
+          {
+            role: "PRESIDENT",
+            name: "AYUSH<br>SHARMA",
+            resolve: "THE PRES.",
+            img: null,
+          },
+          {
+            role: "VICE PRESIDENT",
+            name: "SAHIL<br>RANA",
+            resolve: "V.P.",
+            img: null,
+          },
+          {
+            role: "FINANCE HEAD",
+            name: "AYUSH<br>ABHYUDAYA",
+            resolve: "FINANCIAL BOSS",
+            img: null,
+          },
+          {
+            role: "TECHNICAL HEAD",
+            name: "SAMBHAV\u200B\u200B",
+            resolve: "TECH GURU",
+            img: null,
+          },
+          {
+            role: "PR HEAD",
+            name: "PEEYUSH<br>SHARMA",
+            resolve: "STRONG PR",
+            img: null,
+          },
+          {
+            role: "CREATIVE HEAD",
+            name: "AKSHAT<br>DIMRI",
+            resolve: "MAX CREATIVE",
+            img: "./images/akshat.jpg",
+          },
+        ],
+        [
+          { role: "EXEC MEMBER", name: "RANDOM<br>PERSON", img: null },
+          { role: "EXEC MEMBER", name: "ANOTHER<br>PERSON", img: null },
+          { role: "EXEC MEMBER", name: "SOMEONE<br>ELSE", img: null },
+          { role: "EXEC MEMBER", name: "ANOTHER<br>RANDOM", img: null },
+          { role: "EXEC MEMBER", name: "PLACEHOLDER<br>PERSON", img: null },
+          { role: "EXEC MEMBER", name: "LAST<br>HUMAN", img: null },
+        ],
+      ];
+
+      const archiveDB = [
+        {
+          img: "./images/png_1.png",
+          caption: "there was an idea... (avengers wala nahi)",
+        },
+        {
+          img: "./images/png_2.png",
+          caption: "got to the drafting phase",
+        },
+        {
+          img: "./images/png_3.png",
+          caption: "did the ideation",
+        },
+        { img: "./images/logo2.png", caption: "got this rendered" },
+      ];
+
+      // === ARCHIVE IMAGE PRE-DECODE CACHE ===
+      const archiveImageCache = [];
+
+      function preloadArchiveImages() {
+        archiveDB.forEach((item) => {
+          const img = new Image();
+          img.src = item.img;
+
+          // Hints for mobile browsers
+          img.decoding = "async";
+          img.loading = "eager";
+
+          archiveImageCache.push(img);
+        });
+      }
+
+      let currentArchiveIndex = 0;
+
+      const contactDB = {
+        core: [
+          {
+            name: "AYUSH SHARMA",
+            role: "PRESIDENT",
+            phone: "+91 98350 35190",
+            email: "ayush@physteo.in",
+            socials: {
+              IG: "#",
+              IN: "#",
+              GH: "#",
+            },
+          },
+          {
+            name: "SAHIL RANA",
+            role: "VICE PRESIDENT",
+            phone: "+91 98161 62477",
+            email: "sahil@physteo.in",
+            socials: {
+              IG: "#",
+              IN: "#",
+            },
+          },
+          {
+            name: "AKSHAT DIMRI",
+            role: "CREATIVE HEAD",
+            phone: "+91 XXXXXXXX",
+            email: "akshat@physteo.in",
+            socials: {
+              IG: "#",
+              IN: "#",
+            },
+          },
+        ],
+        exec: [
+          { name: "RANDOM PERSON" },
+          { name: "ANOTHER PERSON" },
+          { name: "SOMEONE ELSE" },
+        ],
+        society: {
+          IG: "https://www.instagram.com/physteo/",
+          IN: "#",
+          EMAIL: "physteo@nith.ac.in",
+        },
+      };
+
+      let currentEventPage = 0;
+      let currentTeamPage = 0;
+      const viewContainer = document.getElementById("dynamic-view");
+
+      function loadPage(pageName) {
+        updateStatusBar(`LOADING_MODULE_[${pageName.toUpperCase()}]...`);
+        viewContainer.innerHTML = "";
+        viewContainer.className = `view-${pageName}`;
+        setTimeout(() => {
+          if (pageName === "home") renderHome();
+          else if (pageName === "events") {
+            currentEventPage = 0;
+            renderEvents(currentEventPage);
+          } else if (pageName === "team") {
+            currentTeamPage = 0;
+            renderTeam(currentTeamPage);
+          } else if (pageName === "about") renderAbout();
+          else if (pageName === "archive") {
+            currentArchiveIndex = 0;
+            renderArchive(currentArchiveIndex);
+          } else if (pageName === "contact") renderContact();
+          document.querySelectorAll(".content-panel").forEach((panel, i) => {
+            setTimeout(() => panel.classList.add("visible"), i * 100);
+          });
+          resetStatus();
+        }, 400);
+      }
+
+      function renderHome() {
+        viewContainer.innerHTML = `
                 <div class="content-panel" style="justify-content: flex-start;">
                     <p id="observer-display" class="system-status">[ SYSTEM ONLINE ]</p>
                     <div class="hero-title-wrapper">
@@ -1041,91 +1343,117 @@
                     </div>
                 </div>
             `;
-            const observerEl = document.getElementById('observer-display');
-            const jargon = "!@#$%^&*()_+-=[]{}|;':,.<>?/0123456789αβγδεζηθικλμνξοπρστυφχψω";
-            fetch('https://api.ipify.org?format=json').then(response => response.json()).then(data => {
-                const userIP = `OBSERVER_IP: ${data.ip}`;
-                setTimeout(() => {
-                    if(!observerEl) return;
-                    let scrambleIterations = 0;
-                    const maxScramble = 25; 
-                    const scrambleInterval = setInterval(() => {
-                        observerEl.innerText = Array(18).fill(0).map(() => jargon[Math.floor(Math.random() * jargon.length)]).join('');
-                        scrambleIterations++;
-                        if (scrambleIterations > maxScramble) {
-                            clearInterval(scrambleInterval);
-                            observerEl.innerText = "";
-                            let charIndex = 0;
-                            const typeIP = () => {
-                                if (charIndex < userIP.length) {
-                                    observerEl.innerText += userIP.charAt(charIndex);
-                                    charIndex++;
-                                    let typingSpeed = 50 + Math.random() * 100; 
-                                    setTimeout(typeIP, typingSpeed);
-                                }
-                            };
-                            typeIP();
-                        }
-                    }, 100); 
-                }, 3000);
-            }).catch(() => { if(observerEl) observerEl.innerText = "OBSERVER_IP: 127.0.0.1"; });
-            const waveBox = document.getElementById('wave-box');
-            const tooltip = document.getElementById('wave-tooltip');
-            if(waveBox && tooltip) {
-                const updateTooltip = (e) => {
-                    const rect = waveBox.getBoundingClientRect();
-                    const x = Math.round(e.clientX - rect.left);
-                    const yRaw = e.clientY - rect.top;
-                    const y = Math.round((30 - yRaw)); 
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = (e.clientX - rect.left + 15) + 'px'; 
-                    tooltip.style.top = (e.clientY - rect.top - 30) + 'px'; 
-                    tooltip.innerHTML = `X:${x} <span style="opacity:0.5">|</span> Y:${y > 0 ? '+' : ''}${y}`;
-                    updateStatusBar(`WAVE_FUNC_PROBE | COORDS: [X:${x}, Y:${y}]`);
-                    clearTimeout(window.statusTimeout);
-                    window.statusTimeout = setTimeout(resetStatus, 1500);
-                };
-                waveBox.addEventListener('mousemove', updateTooltip);
-                waveBox.addEventListener('touchstart', (e) => updateTooltip(e.touches[0]));
-                waveBox.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; resetStatus(); });
-            }
-            startHomeTyping();
+        const observerEl = document.getElementById("observer-display");
+        const jargon =
+          "!@#$%^&*()_+-=[]{}|;':,.<>?/0123456789αβγδεζηθικλμνξοπρστυφχψω";
+        fetch("https://api.ipify.org?format=json")
+          .then((response) => response.json())
+          .then((data) => {
+            const userIP = `OBSERVER_IP: ${data.ip}`;
+            setTimeout(() => {
+              if (!observerEl) return;
+              let scrambleIterations = 0;
+              const maxScramble = 25;
+              const scrambleInterval = setInterval(() => {
+                observerEl.innerText = Array(18)
+                  .fill(0)
+                  .map(() => jargon[Math.floor(Math.random() * jargon.length)])
+                  .join("");
+                scrambleIterations++;
+                if (scrambleIterations > maxScramble) {
+                  clearInterval(scrambleInterval);
+                  observerEl.innerText = "";
+                  let charIndex = 0;
+                  const typeIP = () => {
+                    if (charIndex < userIP.length) {
+                      observerEl.innerText += userIP.charAt(charIndex);
+                      charIndex++;
+                      let typingSpeed = 50 + Math.random() * 100;
+                      setTimeout(typeIP, typingSpeed);
+                    }
+                  };
+                  typeIP();
+                }
+              }, 100);
+            }, 3000);
+          })
+          .catch(() => {
+            if (observerEl) observerEl.innerText = "OBSERVER_IP: 127.0.0.1";
+          });
+        const waveBox = document.getElementById("wave-box");
+        const tooltip = document.getElementById("wave-tooltip");
+        if (waveBox && tooltip) {
+          const updateTooltip = (e) => {
+            const rect = waveBox.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const yRaw = e.clientY - rect.top;
+            const y = Math.round(30 - yRaw);
+            tooltip.style.display = "block";
+            tooltip.style.left = e.clientX - rect.left + 15 + "px";
+            tooltip.style.top = e.clientY - rect.top - 30 + "px";
+            tooltip.innerHTML = `X:${x} <span style="opacity:0.5">|</span> Y:${
+              y > 0 ? "+" : ""
+            }${y}`;
+            updateStatusBar(`WAVE_FUNC_PROBE | COORDS: [X:${x}, Y:${y}]`);
+            clearTimeout(window.statusTimeout);
+            window.statusTimeout = setTimeout(resetStatus, 1500);
+          };
+          waveBox.addEventListener("mousemove", updateTooltip);
+          waveBox.addEventListener("touchstart", (e) =>
+            updateTooltip(e.touches[0])
+          );
+          waveBox.addEventListener("mouseleave", () => {
+            tooltip.style.display = "none";
+            resetStatus();
+          });
         }
+        startHomeTyping();
+      }
 
-        function renderEvents(pageIndex) {
-            const data = eventsDB[pageIndex];
-            let html = '';
-            data.forEach(item => {
-                html += `
+      function renderEvents(pageIndex) {
+        const data = eventsDB[pageIndex];
+        let html = "";
+        data.forEach((item) => {
+          html += `
                 <div class="content-panel">
                     <div class="event-card">
-                        ${item.img ? `<div class="artifact-frame"><img src="${item.img}" class="data-img"></div>` : ''}
+                        ${
+                          item.img
+                            ? `<div class="artifact-frame"><img src="${item.img}" class="data-img"></div>`
+                            : ""
+                        }
                         <div>
                             <span class="date">${item.date}</span>
                             <div class="event-number">${item.num}</div>
                             <h2 class="type-target">${item.title}</h2>
                         </div>
-                        <p style="font-family: monospace; font-size: 0.85rem; margin-top:10px;">${item.desc}</p>
+                        <p style="font-family: monospace; font-size: 0.85rem; margin-top:10px;">${
+                          item.desc
+                        }</p>
                     </div>
                 </div>`;
-            });
-            html += `<div class="scroll-arrow" onclick="nextPageEvents()">></div>`;
-            viewContainer.innerHTML = html;
-            setTimeout(() => {
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
-                startGenericTyping();
-            }, 50);
-        }
+        });
+        html += `<div class="scroll-arrow" onclick="nextPageEvents()">></div>`;
+        viewContainer.innerHTML = html;
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-panel")
+            .forEach((p) => p.classList.add("visible"));
+          startGenericTyping();
+        }, 50);
+      }
 
-        function renderTeam(pageIndex) {
-            const data = teamDB[pageIndex];
-            let html = '';
-            data.forEach(member => {
-                const mid = Math.floor(Math.random()*9000)+1000;
-                html += `
+      function renderTeam(pageIndex) {
+        const data = teamDB[pageIndex];
+        let html = "";
+        data.forEach((member) => {
+          const mid = Math.floor(Math.random() * 9000) + 1000;
+          html += `
                 <div class="content-panel"
                     onmouseenter="
-                        updateStatusBar('SCANNING_MEMBER_ID: ${mid} | ROLE: ${member.role}');
+                        updateStatusBar('SCANNING_MEMBER_ID: ${mid} | ROLE: ${
+            member.role
+          }');
                         eraseRoleText(this.querySelector('.role-anim'));
                     "
                     onmouseleave="
@@ -1133,77 +1461,91 @@
                     ">
                     <div class="team-card">
                         <div class="artifact-frame">
-                            <img src="${member.img || 'placeholder.jpg'}" class="data-img" style="${!member.img ? 'opacity:0.2' : ''}">
+                            <img src="${
+                              member.img || "placeholder.jpg"
+                            }" class="data-img" style="${
+            !member.img ? "opacity:0.2" : ""
+          }">
                         </div>
                         <div class="team-details">
                             <span class="date">MEMBER_ID: ${mid}</span>
                             <div class="team-name-group">
                                 <h2 
                                 class="type-target schrodinger-target"
-                                data-resolve="${member.resolve || ''}" 
+                                data-resolve="${member.resolve || ""}" 
                                 style="font-size: 1.2rem; line-height: 1.1;">
                                 ${member.name}
                                 </h2>
                                 <div class="team-separator"></div>
-                                <span class="role role-anim">${member.role}</span>
+                                <span class="role role-anim">${
+                                  member.role
+                                }</span>
                             </div>
                         </div>
                     </div>
                 </div>`;
-            });
-            html += `<div class="scroll-arrow" onclick="nextPageTeam()">></div>`;
-            viewContainer.innerHTML = html;
-            setTimeout(() => {
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
-                startGenericTyping();
-                activateSchrodingerGlitch();
-            }, 50);
-        }
+        });
+        html += `<div class="scroll-arrow" onclick="nextPageTeam()">></div>`;
+        viewContainer.innerHTML = html;
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-panel")
+            .forEach((p) => p.classList.add("visible"));
+          startGenericTyping();
+          activateSchrodingerGlitch();
+        }, 50);
+      }
 
-        function renderArchive(index) {
-            viewContainer.innerHTML = `
+      function renderArchive(index) {
+        viewContainer.innerHTML = `
                 <div class="content-panel archive-panel">
                     <div class="archive-stage">
                         <canvas id="archive-canvas"></canvas>
+                        <div class="archive-caption">
+                            <span class="type-target" id="archive-caption-text"></span>
+                        </div>
                     </div>
                 </div>
-                <div class="scroll-arrow" onclick="nextArchive()">></div>
+                <div class="scroll-arrow scroll-prev" onclick="prevArchive()"><</div>
+                <div class="scroll-arrow scroll-next" onclick="nextArchive()">></div>
+
             `;
 
-            setTimeout(() => {
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
-                startArchiveMorph(archiveDB[index].img);
-            }, 50);
-        }
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-panel")
+            .forEach((p) => p.classList.add("visible"));
+          startArchiveMorph(archiveDB[index].img);
+          typeArchiveCaption(archiveDB[index].caption);
+        }, 50);
+      }
 
-        function eraseRoleText(span) {
-            if (!span || span.dataset.erased === "1") return;
+      function eraseRoleText(span) {
+        if (!span || span.dataset.erased === "1") return;
 
-            span.dataset.erased = "1";
-            let text = span.innerText;
-            let i = text.length;
+        span.dataset.erased = "1";
+        let text = span.innerText;
+        let i = text.length;
 
-            const interval = setInterval(() => {
-                i--;
-                span.innerText = text.slice(0, i);
+        const interval = setInterval(() => {
+          i--;
+          span.innerText = text.slice(0, i);
 
-                if (i <= 0) {
-                    clearInterval(interval);
-                }
-            }, 40);
-        }
+          if (i <= 0) {
+            clearInterval(interval);
+          }
+        }, 40);
+      }
 
+      function restoreRoleText(span) {
+        if (!span || !span.dataset.original) return;
 
-        function restoreRoleText(span) {
-            if (!span || !span.dataset.original) return;
+        span.innerText = span.dataset.original;
+        delete span.dataset.erasing;
+      }
 
-            span.innerText = span.dataset.original;
-            delete span.dataset.erasing;
-        }
-
-
-                function renderAbout() {
-            viewContainer.innerHTML = `
+      function renderAbout() {
+        viewContainer.innerHTML = `
                 <div class="content-panel about-manifest">
                     <h1 class="type-target">
                         <span class="big-char">P</span>URSUING<br>
@@ -1241,31 +1583,37 @@
                     </div>
                 </div>
             `;
-            setTimeout(() => {
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
-                startGenericTyping();
-                activateSchrodingerGlitch();
-            }, 50);
-        }
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-panel")
+            .forEach((p) => p.classList.add("visible"));
+          startGenericTyping();
+          activateSchrodingerGlitch();
+        }, 50);
+      }
 
-
-        function renderContact() {
-            viewContainer.innerHTML = `
+      function renderContact() {
+        viewContainer.innerHTML = `
                 <div class="content-panel contact-list">
                     <div class="contact-section">
                         <div class="contact-section-title">CORE CONTACTS</div>
-                        ${contactDB.core.map((m, i) =>
-                            `<div class="contact-node" data-core="${i}">
+                        ${contactDB.core
+                          .map(
+                            (m, i) =>
+                              `<div class="contact-node" data-core="${i}">
                                 ● ${m.name}
                             </div>`
-                        ).join('')}
+                          )
+                          .join("")}
                     </div>
 
                     <div class="contact-section">
                         <div class="contact-section-title">EXEC CONTACTS</div>
-                        ${contactDB.exec.map(m =>
-                            `<div class="contact-node">○ ${m.name}</div>`
-                        ).join('')}
+                        ${contactDB.exec
+                          .map(
+                            (m) => `<div class="contact-node">○ ${m.name}</div>`
+                          )
+                          .join("")}
                     </div>
                 </div>
 
@@ -1279,20 +1627,23 @@
                         <span class="contact-socials">
                             <a href="${contactDB.society.IG}">INSTAGRAM</a>
                             <a href="${contactDB.society.IN}">LINKEDIN</a>
-                            <a href="mailto:${contactDB.society.EMAIL}">EMAIL</a>
+                            <a href="mailto:${
+                              contactDB.society.EMAIL
+                            }">EMAIL</a>
                         </span>
                     </span>
                 </div>
             `;
 
-            const detailBox = document.getElementById("contact-details");
+        const detailBox = document.getElementById("contact-details");
 
-            document.querySelectorAll(".contact-node[data-core]").forEach(node => {
-                node.addEventListener("mouseenter", () => {
-                    const m = contactDB.core[node.dataset.core];
+        document
+          .querySelectorAll(".contact-node[data-core]")
+          .forEach((node) => {
+            node.addEventListener("mouseenter", () => {
+              const m = contactDB.core[node.dataset.core];
 
-                    detailBox.innerText =
-        `${m.name}
+              detailBox.innerText = `${m.name}
         ${m.role}
 
         PHONE : ${m.phone}
@@ -1301,189 +1652,283 @@
         SOCIAL:
         ${Object.keys(m.socials).join(" | ")}`;
 
-                    updateStatusBar(`SIGNAL_LOCKED | ${m.role}`);
-                });
-
-                node.addEventListener("mouseleave", resetStatus);
+              updateStatusBar(`SIGNAL_LOCKED | ${m.role}`);
             });
 
-            setTimeout(() => {
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.add('visible'));
-            }, 50);
+            node.addEventListener("mouseleave", resetStatus);
+          });
+
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-panel")
+            .forEach((p) => p.classList.add("visible"));
+        }, 50);
+      }
+
+      function nextPageEvents() {
+        updateStatusBar("PAGINATING_EVENT_INDEX...");
+        untypeAll(() => {
+          currentEventPage++;
+          if (currentEventPage >= eventsDB.length) currentEventPage = 0;
+          renderEvents(currentEventPage);
+        });
+      }
+      function nextPageTeam() {
+        updateStatusBar("PAGINATING_TEAM_INDEX...");
+        untypeAll(() => {
+          currentTeamPage++;
+          if (currentTeamPage >= teamDB.length) currentTeamPage = 0;
+          renderTeam(currentTeamPage);
+        });
+      }
+
+      function nextArchive() {
+        updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
+        currentArchiveIndex++;
+        if (currentArchiveIndex >= archiveDB.length) currentArchiveIndex = 0;
+
+        startArchiveMorph(archiveDB[currentArchiveIndex].img);
+        typeArchiveCaption(archiveDB[currentArchiveIndex].caption);
+      }
+
+      function prevArchive() {
+        updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
+        currentArchiveIndex--;
+
+        if (currentArchiveIndex < 0) {
+            currentArchiveIndex = archiveDB.length - 1;
         }
 
+        startArchiveMorph(archiveDB[currentArchiveIndex].img);
+        typeArchiveCaption(archiveDB[currentArchiveIndex].caption);
+    }
 
-        function nextPageEvents() { updateStatusBar("PAGINATING_EVENT_INDEX..."); untypeAll(() => { currentEventPage++; if (currentEventPage >= eventsDB.length) currentEventPage = 0; renderEvents(currentEventPage); }); }
-        function nextPageTeam() { updateStatusBar("PAGINATING_TEAM_INDEX..."); untypeAll(() => { currentTeamPage++; if (currentTeamPage >= teamDB.length) currentTeamPage = 0; renderTeam(currentTeamPage); }); }
 
-        function nextArchive() {
-            updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
-            currentArchiveIndex++;
-            if (currentArchiveIndex >= archiveDB.length) currentArchiveIndex = 0;
-            startArchiveMorph(archiveDB[currentArchiveIndex].img);
+      function untypeAll(callback) {
+        const targets = document.querySelectorAll(".type-target");
+        let completed = 0;
+        if (targets.length === 0) {
+          callback();
+          return;
         }
-
-        function untypeAll(callback) {
-            const targets = document.querySelectorAll('.type-target');
-            let completed = 0;
-            if(targets.length === 0) { callback(); return; }
-            targets.forEach(target => {
-                const interval = setInterval(() => {
-                    if (target.innerHTML.slice(-1) === '>') {
-                        let tagStart = target.innerHTML.lastIndexOf('<');
-                        target.innerHTML = target.innerHTML.substring(0, tagStart);
-                    } else { target.innerHTML = target.innerHTML.slice(0, -1); }
-                    if (target.innerHTML === '') { clearInterval(interval); completed++; if (completed === targets.length) callback(); }
-                }, 10);
-            });
-        }
-
-        function startGenericTyping() {
-            const targets = document.querySelectorAll('.type-target');
-            targets.forEach(target => {
-                const text = target.innerHTML;
-                target.innerHTML = '';
-                let i = 0;
-                function typeChar() {
-                    if (i < text.length) {
-                        if (text.charAt(i) === '<') {
-                            let tagEnd = text.indexOf('>', i);
-                            target.innerHTML += text.substring(i, tagEnd + 1);
-                            i = tagEnd + 1;
-                        } else { target.innerHTML += text.charAt(i); i++; }
-                        setTimeout(typeChar, 30);
-                    }
-                }
-                typeChar();
-            });
-        }
-
-        function startHomeTyping() {
-            const h1 = document.getElementById('home-title');
-            if(!h1) return;
-            const cursor = '<span class="cursor">&nbsp;</span>';
-            const textSteps = [ "EXPLORE<br>THE<br>UNSEEN", "<span class='big-char'>N</span><span class='small-text'>EXUS FOR</span><br><span class='big-char'>I</span><span class='small-text'>NNOVATION IN</span><br><span class='big-char'>T</span><span class='small-text'>ECHNICAL</span><br><span class='big-char'>H</span><span class='small-text'>YPERGROWTH</span>" ];
-            let stepIndex = 0; let charIndex = 0; let isDeleting = false; let currentContent = "";
-            function loop() {
-                if(!document.getElementById('home-title')) return;
-                const fullString = textSteps[stepIndex];
-                if (isDeleting) {
-                    if (currentContent.slice(-1) === '>') { let tagStart = currentContent.lastIndexOf('<'); currentContent = currentContent.substring(0, tagStart); }
-                    else { currentContent = currentContent.slice(0, -1); }
-                } else {
-                    if (fullString.charAt(charIndex) === '<') { let tagEnd = fullString.indexOf('>', charIndex); currentContent += fullString.substring(charIndex, tagEnd + 1); charIndex = tagEnd + 1; }
-                    else { currentContent += fullString.charAt(charIndex); charIndex++; }
-                }
-                h1.innerHTML = currentContent + cursor;
-                let speed = isDeleting ? 50 : 100;
-                if (!isDeleting && charIndex >= fullString.length) { speed = 3500; isDeleting = true; } 
-                else if (isDeleting && currentContent === '') { isDeleting = false; stepIndex = (stepIndex + 1) % textSteps.length; charIndex = 0; speed = 1000; }
-                setTimeout(loop, speed);
+        targets.forEach((target) => {
+          const interval = setInterval(() => {
+            if (target.innerHTML.slice(-1) === ">") {
+              let tagStart = target.innerHTML.lastIndexOf("<");
+              target.innerHTML = target.innerHTML.substring(0, tagStart);
+            } else {
+              target.innerHTML = target.innerHTML.slice(0, -1);
             }
-            loop();
+            if (target.innerHTML === "") {
+              clearInterval(interval);
+              completed++;
+              if (completed === targets.length) callback();
+            }
+          }, 10);
+        });
+      }
+
+      function startGenericTyping() {
+        const targets = document.querySelectorAll(".type-target");
+        targets.forEach((target) => {
+          const text = target.innerHTML;
+          target.innerHTML = "";
+          let i = 0;
+          function typeChar() {
+            if (i < text.length) {
+              if (text.charAt(i) === "<") {
+                let tagEnd = text.indexOf(">", i);
+                target.innerHTML += text.substring(i, tagEnd + 1);
+                i = tagEnd + 1;
+              } else {
+                target.innerHTML += text.charAt(i);
+                i++;
+              }
+              setTimeout(typeChar, 30);
+            }
+          }
+          typeChar();
+        });
+      }
+
+      function typeArchiveCaption(text) {
+        const el = document.getElementById("archive-caption-text");
+        if (!el) return;
+
+        el.innerHTML = "";
+        let i = 0;
+
+        function type() {
+          if (i < text.length) {
+            el.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, 35);
+          }
         }
 
-        function activateSchrodingerGlitch() {
-            const targets = document.querySelectorAll('.schrodinger-target');
-            const glitchChars = "010101∅±∑√∫≈≠";
-            targets.forEach(target => {
-                const originalHTML = target.innerHTML;
-                const triggerGlitch = () => {
-                    let iterations = 0;
-                    const interval = setInterval(() => {
-                        let glitchText = "";
-                        for(let i=0; i<target.innerText.length; i++) { glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)]; }
-                        target.innerText = glitchText;
-                        iterations++;
-                        if (iterations > 10) {
-                            clearInterval(interval);
+        type();
+      }
 
-                            const resolveText = target.dataset.resolve;
-                            if (resolveText) {
-                                // preserve length exactly
-                                const trimmed = resolveText.slice(0, target.innerText.length);
-                                target.innerText = trimmed;
-                            } else {
-                                target.innerHTML = originalHTML;
-                            }
-                        }
-                    }, 50);
-                    updateStatusBar("QUANTUM_STATE_DECOHERENCE_DETECTED...");
-                    clearTimeout(window.statusTimeout);
-                    window.statusTimeout = setTimeout(resetStatus, 1000);
-                };
-                target.addEventListener('mouseenter', triggerGlitch);
-                target.addEventListener('touchstart', triggerGlitch);
-            });
+      function startHomeTyping() {
+        const h1 = document.getElementById("home-title");
+        if (!h1) return;
+        const cursor = '<span class="cursor">&nbsp;</span>';
+        const textSteps = [
+          "EXPLORE<br>THE<br>UNSEEN",
+          "<span class='big-char'>N</span><span class='small-text'>EXUS FOR</span><br><span class='big-char'>I</span><span class='small-text'>NNOVATION IN</span><br><span class='big-char'>T</span><span class='small-text'>ECHNICAL</span><br><span class='big-char'>H</span><span class='small-text'>YPERGROWTH</span>",
+        ];
+        let stepIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let currentContent = "";
+        function loop() {
+          if (!document.getElementById("home-title")) return;
+          const fullString = textSteps[stepIndex];
+          if (isDeleting) {
+            if (currentContent.slice(-1) === ">") {
+              let tagStart = currentContent.lastIndexOf("<");
+              currentContent = currentContent.substring(0, tagStart);
+            } else {
+              currentContent = currentContent.slice(0, -1);
+            }
+          } else {
+            if (fullString.charAt(charIndex) === "<") {
+              let tagEnd = fullString.indexOf(">", charIndex);
+              currentContent += fullString.substring(charIndex, tagEnd + 1);
+              charIndex = tagEnd + 1;
+            } else {
+              currentContent += fullString.charAt(charIndex);
+              charIndex++;
+            }
+          }
+          h1.innerHTML = currentContent + cursor;
+          let speed = isDeleting ? 50 : 100;
+          if (!isDeleting && charIndex >= fullString.length) {
+            speed = 3500;
+            isDeleting = true;
+          } else if (isDeleting && currentContent === "") {
+            isDeleting = false;
+            stepIndex = (stepIndex + 1) % textSteps.length;
+            charIndex = 0;
+            speed = 1000;
+          }
+          setTimeout(loop, speed);
         }
+        loop();
+      }
 
-        window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            const velocity = Math.abs(currentScrollY - lastScrollY);
-            document.body.classList.remove('doppler-red', 'doppler-blue');
-            if (currentScrollY > lastScrollY) { document.body.classList.add('doppler-red'); updateStatusBar(`DOPPLER_RED_SHIFT | VELOCITY: ${velocity}px/frame`); }
-            else if (currentScrollY < lastScrollY) { document.body.classList.add('doppler-blue'); updateStatusBar(`DOPPLER_BLUE_SHIFT | VELOCITY: ${velocity}px/frame`); }
-            lastScrollY = currentScrollY;
+      function activateSchrodingerGlitch() {
+        const targets = document.querySelectorAll(".schrodinger-target");
+        const glitchChars = "010101∅±∑√∫≈≠";
+        targets.forEach((target) => {
+          const originalHTML = target.innerHTML;
+          const triggerGlitch = () => {
+            let iterations = 0;
+            const interval = setInterval(() => {
+              let glitchText = "";
+              for (let i = 0; i < target.innerText.length; i++) {
+                glitchText +=
+                  glitchChars[Math.floor(Math.random() * glitchChars.length)];
+              }
+              target.innerText = glitchText;
+              iterations++;
+              if (iterations > 10) {
+                clearInterval(interval);
+
+                const resolveText = target.dataset.resolve;
+                if (resolveText) {
+                  // preserve length exactly
+                  const trimmed = resolveText.slice(0, target.innerText.length);
+                  target.innerText = trimmed;
+                } else {
+                  target.innerHTML = originalHTML;
+                }
+              }
+            }, 50);
+            updateStatusBar("QUANTUM_STATE_DECOHERENCE_DETECTED...");
             clearTimeout(window.statusTimeout);
             window.statusTimeout = setTimeout(resetStatus, 1000);
+          };
+          target.addEventListener("mouseenter", triggerGlitch);
+          target.addEventListener("touchstart", triggerGlitch);
         });
+      }
 
-        let keyBuffer = '';
-        document.addEventListener('keydown', (e) => {
-            keyBuffer += e.key.toLowerCase();
-            if (keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
+      window.addEventListener("scroll", () => {
+        const currentScrollY = window.scrollY;
+        const velocity = Math.abs(currentScrollY - lastScrollY);
+        document.body.classList.remove("doppler-red", "doppler-blue");
+        if (currentScrollY > lastScrollY) {
+          document.body.classList.add("doppler-red");
+          updateStatusBar(`DOPPLER_RED_SHIFT | VELOCITY: ${velocity}px/frame`);
+        } else if (currentScrollY < lastScrollY) {
+          document.body.classList.add("doppler-blue");
+          updateStatusBar(`DOPPLER_BLUE_SHIFT | VELOCITY: ${velocity}px/frame`);
+        }
+        lastScrollY = currentScrollY;
+        clearTimeout(window.statusTimeout);
+        window.statusTimeout = setTimeout(resetStatus, 1000);
+      });
 
-            const body = document.body;
+      let keyBuffer = "";
+      document.addEventListener("keydown", (e) => {
+        keyBuffer += e.key.toLowerCase();
+        if (keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
 
-            if (keyBuffer.endsWith('light')) {
-                body.classList.remove('theme-blue', 'theme-green');
-                body.classList.toggle('inverted');
-                updateStatusBar("POLARITY_INVERTED | LIGHT_MODE: ACTIVE");
-                keyBuffer = '';
-            }
+        const body = document.body;
 
-            if (keyBuffer.endsWith('blue')) {
-                body.classList.remove('inverted', 'theme-green');
-                body.classList.add('theme-blue');
-                updateStatusBar("TERMINAL_THEME | BLUE_MODE: ACTIVE");
-                keyBuffer = '';
-            }
+        if (keyBuffer.endsWith("light")) {
+          body.classList.remove("theme-blue", "theme-green");
+          body.classList.toggle("inverted");
+          updateStatusBar("POLARITY_INVERTED | LIGHT_MODE: ACTIVE");
+          keyBuffer = "";
+        }
 
-            if (keyBuffer.endsWith('green')) {
-                body.classList.remove('inverted', 'theme-blue');
-                body.classList.add('theme-green');
-                updateStatusBar("TERMINAL_THEME | GREEN_MODE: ACTIVE");
-                keyBuffer = '';
-            }
+        if (keyBuffer.endsWith("blue")) {
+          body.classList.remove("inverted", "theme-green");
+          body.classList.add("theme-blue");
+          updateStatusBar("TERMINAL_THEME | BLUE_MODE: ACTIVE");
+          keyBuffer = "";
+        }
 
+        if (keyBuffer.endsWith("green")) {
+          body.classList.remove("inverted", "theme-blue");
+          body.classList.add("theme-green");
+          updateStatusBar("TERMINAL_THEME | GREEN_MODE: ACTIVE");
+          keyBuffer = "";
+        }
+
+        setTimeout(resetStatus, 2000);
+      });
+
+      /* === MOBILE 4-TAP INVERSION (NON-INTRUSIVE) === */
+
+      let tapCount = 0;
+      let tapTimer = null;
+      const TAP_WINDOW = 700; // ms
+
+      document.addEventListener(
+        "touchend",
+        () => {
+          tapCount++;
+
+          if (tapCount === 1) {
+            tapTimer = setTimeout(() => {
+              tapCount = 0;
+            }, TAP_WINDOW);
+          }
+
+          if (tapCount === 4) {
+            clearTimeout(tapTimer);
+            tapCount = 0;
+
+            document.body.classList.toggle("inverted");
+            updateStatusBar("POLARITY_INVERTED | TOUCH_GESTURE: ACTIVE");
             setTimeout(resetStatus, 2000);
-        });
-
-
-        /* === MOBILE 4-TAP INVERSION (NON-INTRUSIVE) === */
-
-        let tapCount = 0;
-        let tapTimer = null;
-        const TAP_WINDOW = 700; // ms
-
-        document.addEventListener('touchend', () => {
-            tapCount++;
-
-            if (tapCount === 1) {
-                tapTimer = setTimeout(() => {
-                    tapCount = 0;
-                }, TAP_WINDOW);
-            }
-
-            if (tapCount === 4) {
-                clearTimeout(tapTimer);
-                tapCount = 0;
-
-                document.body.classList.toggle('inverted');
-                updateStatusBar("POLARITY_INVERTED | TOUCH_GESTURE: ACTIVE");
-                setTimeout(resetStatus, 2000);
-            }
-        }, { passive: true });
+          }
+        },
+        { passive: true }
+      );
     </script>
-</body>
+  </body>
 </html>
