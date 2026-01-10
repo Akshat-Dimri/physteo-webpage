@@ -690,6 +690,20 @@
         .scroll-prev {
             right: 70px;
         }
+
+        #dynamic-view.view-about {
+          display: flex;
+          flex-direction: column;
+        }
+
+        #dynamic-view.view-about .content-panel {
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        #dynamic-view.view-about .content-panel:last-child {
+          border-bottom: none;
+        }
       }
 
       /* === CONTACT FIELD (SCOPED) === */
@@ -1132,18 +1146,18 @@
       const eventsDB = [
       [
         {
-          date: "APR 20",
-          num: "01",
-          title: "NEP-2020<br>WORKSHOP",
-          desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
-          img: "./event_images/nep2020.png",
-        },
-        {
-          date: "NOV",
+          date: "NOV 2022",
           num: "02",
           title: "QUANTUM<br>COMPUTING",
           desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
           img: "./event_images/quantum_talk.png",
+        },
+        {
+          date: "APR 2023",
+          num: "01",
+          title: "NEP-2020<br>WORKSHOP",
+          desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
+          img: "./event_images/nep2020.png",
         },
         {
           date: "JUN 27",
@@ -1175,40 +1189,46 @@
       const teamDB = [
         [
           {
+            id: "PH016",
             role: "PRESIDENT",
             name: "AYUSH<br>SHARMA",
             resolve: "THE PRES.",
             img: null,
           },
           {
+            id: "MA036",
             role: "VICE PRESIDENT",
             name: "SAHIL<br>RANA",
             resolve: "V.P.",
             img: null,
           },
           {
+            id: "CH015",
             role: "FINANCE HEAD",
             name: "AYUSH<br>ABHYUDAYA",
             resolve: "HEAD OF FINANCE",
             img: null,
           },
           {
+            id:"MA037",
             role: "TECHNICAL HEAD",
             name: "SAMBHAV\u200B\u200B",
             resolve: "TECH HEAD",
-            img: null,
+            img: "./images/members/sambhav_tech.jpeg",
           },
           {
+            id:"PH030",
             role: "PR HEAD",
             name: "PEEYUSH<br>SHARMA",
-            resolve: "PUBLIC RELN",
-            img: null,
+            resolve: "PUBLIC RLN",
+            img: "./images/members/peeyush_pr.jpeg.png",
           },
           {
+            id: "PH005",
             role: "CREATIVE HEAD",
             name: "AKSHAT<br>DIMRI",
             resolve: "α Δ",
-            img: "./images/akshat.jpg",
+            img: "./images/members/akshat.jpg",
           },
         ],
         [
@@ -1254,6 +1274,7 @@
       }
 
       let currentArchiveIndex = 0;
+      let archiveCaptionTimer = null;
 
       const contactDB = {
         core: [
@@ -1261,7 +1282,7 @@
             name: "AYUSH SHARMA",
             role: "PRESIDENT",
             phone: "+91 98350 35190",
-            email: "23bph106@nith.ac.in",
+            email: "23bph016@nith.ac.in",
             socials: {
               IG: "https://www.instagram.com/ay.u.sh_sharma/"
             },
@@ -1276,13 +1297,41 @@
             },
           },
           {
+            name: "AYUSH ABHYUDAYA",
+            role: "FINANCE HEAD",
+            phone: "+91 62006 64291",
+            email: "23bch015@nith.ac.in",
+            socials: {
+              IG: "https://www.instagram.com/_ayush1729_"
+            },
+          },
+          {
+            name: "SAMBHAV GUPTA",
+            role: "TECHNICAL HEAD",
+            phone: "+91 78767 54050",
+            email: "23bma037@nith.ac.in",
+            socials: {
+              X: "https://x.com/Sambhav59567"
+            },
+          },
+          {
             name: "PEEYUSH SHARMA",
             role: "PR HEAD",
             phone: "+91 70182 06411",
             email: "23bph030@nith.ac.in",
             socials: {
+              IN: "https://www.linkedin.com/in/peeyush-sharma-791659235/"
             },
           },
+          {
+            name: "AKSHAT DIMRI",
+            role: "CREATIVE HEAD",
+            phone: "+91 63981 22292",
+            email: "23bph005@nith.ac.in",
+            socials: {
+              IN: "https://www.linkedin.com/in/akshatdimri-nith/"
+            },
+          }
         ],
         exec: [
           { name: "EXEC 1" },
@@ -1300,6 +1349,8 @@
       let currentEventPage = 0;
       let currentTeamPage = 0;
       const viewContainer = document.getElementById("dynamic-view");
+      let contactLockedIndex = null;
+
 
       function loadPage(pageName) {
         updateStatusBar(`LOADING_MODULE_[${pageName.toUpperCase()}]...`);
@@ -1467,14 +1518,13 @@
         const data = teamDB[pageIndex];
         let html = "";
         data.forEach((member) => {
-          const mid = Math.floor(Math.random() * 9000) + 1000;
           html += `
                 <div class="content-panel"
                     onmouseenter="
-                        updateStatusBar('SCANNING_MEMBER_ID: ${mid} | ROLE: ${
+                        updateStatusBar('SCANNING_MEMBER_ID: ${member.id} | ROLE: ${
             member.role
           }');
-                        eraseRoleText(this.querySelector('.role-anim'));
+                        
                     "
                     onmouseleave="
                         resetStatus();
@@ -1488,7 +1538,7 @@
           }">
                         </div>
                         <div class="team-details">
-                            <span class="date">MEMBER_ID: ${mid}</span>
+                            <span class="date">MEMBER_ID: ${member.id}</span>
                             <div class="team-name-group">
                                 <h2 
                                 class="type-target schrodinger-target"
@@ -1633,6 +1683,7 @@
       }
 
       function renderContact() {
+        contactLockedIndex = null;
         viewContainer.innerHTML = `
                 <div class="content-panel contact-list">
                     <div class="contact-section">
@@ -1678,33 +1729,37 @@
         document
           .querySelectorAll(".contact-node[data-core]")
           .forEach((node) => {
+            // HOVER (only when not locked)
             node.addEventListener("mouseenter", () => {
+              if (contactLockedIndex !== null) return;
+
               const m = contactDB.core[node.dataset.core];
-
-              const socialsHTML = Object.entries(m.socials || {})
-                .map(
-                  ([key, url]) =>
-                    `<a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a>`
-                )
-                .join(" | ");
-
-              detailBox.innerHTML = `
-              ${m.name}
-              ${m.role}
-
-              PHONE : ${m.phone}
-              EMAIL : <a href="mailto:${m.email}">${m.email}</a>
-
-              SOCIAL:
-              ${socialsHTML || "—"}
-              `;
-
-
-              updateStatusBar(`SIGNAL_LOCKED | ${m.role}`);
+              updateContactDetails(m);
+              updateStatusBar(`SIGNAL_PREVIEW | ${m.role}`);
             });
 
-            node.addEventListener("mouseleave", resetStatus);
+            // CLICK = lock
+            node.addEventListener("click", () => {
+              const index = Number(node.dataset.core);
+
+              // clicking same contact again unlocks (optional behavior)
+              if (contactLockedIndex === index) {
+                contactLockedIndex = null;
+                updateStatusBar("CONTACT_FIELD_UNLOCKED");
+                return;
+              }
+
+              contactLockedIndex = index;
+              const m = contactDB.core[index];
+              updateContactDetails(m);
+              updateStatusBar(`CONTACT_LOCKED | ${m.role}`);
+            });
+
+            node.addEventListener("mouseleave", () => {
+              if (contactLockedIndex === null) resetStatus();
+            });
           });
+
 
         setTimeout(() => {
           document
@@ -1712,6 +1767,30 @@
             .forEach((p) => p.classList.add("visible"));
         }, 50);
       }
+
+      function updateContactDetails(m) {
+        const detailBox = document.getElementById("contact-details");
+        if (!detailBox) return;
+
+        const socialsHTML = Object.entries(m.socials || {})
+          .map(
+            ([key, url]) =>
+              `<a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a>`
+          )
+          .join(" | ");
+
+        detailBox.innerHTML = `
+      ${m.name}
+      ${m.role}
+
+      PHONE : ${m.phone}
+      EMAIL : <a href="mailto:${m.email}">${m.email}</a>
+
+      SOCIAL:
+      ${socialsHTML || "—"}
+      `;
+      }
+
 
       function nextPageEvents() {
         updateStatusBar("PAGINATING_EVENT_INDEX...");
@@ -1803,6 +1882,12 @@
         const el = document.getElementById("archive-caption-text");
         if (!el) return;
 
+        // cancel any ongoing typing
+        if (archiveCaptionTimer) {
+          clearTimeout(archiveCaptionTimer);
+          archiveCaptionTimer = null;
+        }
+
         el.innerHTML = "";
         let i = 0;
 
@@ -1810,12 +1895,16 @@
           if (i < text.length) {
             el.innerHTML += text.charAt(i);
             i++;
-            setTimeout(type, UI_CONFIG.typing.archiveCaptionSpeedMs);
+            archiveCaptionTimer = setTimeout(
+              type,
+              UI_CONFIG.typing.archiveCaptionSpeedMs
+            );
           }
         }
 
         type();
       }
+
 
       function startHomeTyping() {
         const h1 = document.getElementById("home-title");
@@ -1871,39 +1960,87 @@
       function activateSchrodingerGlitch() {
         const targets = document.querySelectorAll(".schrodinger-target");
         const glitchChars = "010101∅±∑√∫≈≠";
+
         targets.forEach((target) => {
-          const originalHTML = target.innerHTML;
+          if (target.dataset.glitchBound === "1") return;
+          target.dataset.glitchBound = "1";
+
+          let hoverTimer = null;
+          let glitchInterval = null;
+
           const triggerGlitch = () => {
+            if (!target.innerText || target.innerText.trim().length === 0) return;
+
+            const originalHTML = target.innerHTML;
+            target.dataset.originalHTML = originalHTML;
+
+            const roleSpan = target
+              .closest(".content-panel")
+              ?.querySelector(".role-anim");
+
+            if (roleSpan) eraseRoleText(roleSpan);
+
             let iterations = 0;
-            const interval = setInterval(() => {
+
+            glitchInterval = setInterval(() => {
               let glitchText = "";
               for (let i = 0; i < target.innerText.length; i++) {
                 glitchText +=
                   glitchChars[Math.floor(Math.random() * glitchChars.length)];
               }
+
               target.innerText = glitchText;
               iterations++;
+
               if (iterations > UI_CONFIG.glitch.iterations) {
-                clearInterval(interval);
+                clearInterval(glitchInterval);
+                glitchInterval = null;
 
                 const resolveText = target.dataset.resolve;
                 if (resolveText) {
-                  // preserve length exactly
-                  const trimmed = resolveText.slice(0, target.innerText.length);
-                  target.innerText = trimmed;
+                  target.innerText = resolveText.slice(0, target.innerText.length);
                 } else {
                   target.innerHTML = originalHTML;
                 }
               }
             }, UI_CONFIG.glitch.frameMs);
+
             updateStatusBar("QUANTUM_STATE_DECOHERENCE_DETECTED...");
             clearTimeout(window.statusTimeout);
             window.statusTimeout = setTimeout(resetStatus, 1000);
           };
-          target.addEventListener("mouseenter", triggerGlitch);
+
+          target.addEventListener("mouseenter", () => {
+            hoverTimer = setTimeout(triggerGlitch, 2000);
+          });
+
+          // DESKTOP: delayed hover (2s)
+          target.addEventListener("mouseenter", () => {
+            hoverTimer = setTimeout(triggerGlitch, 2000);
+          });
+
+          target.addEventListener("mouseleave", () => {
+            if (hoverTimer) {
+              clearTimeout(hoverTimer);
+              hoverTimer = null;
+            }
+
+            if (glitchInterval) {
+              clearInterval(glitchInterval);
+              glitchInterval = null;
+              if (target.dataset.originalHTML) {
+                target.innerHTML = target.dataset.originalHTML;
+              }
+              ;
+            }
+          });
+
+          // MOBILE: immediate
           target.addEventListener("touchstart", triggerGlitch);
         });
       }
+
+
 
       window.addEventListener("scroll", () => {
         const currentScrollY = window.scrollY;
