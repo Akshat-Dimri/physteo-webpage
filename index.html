@@ -222,6 +222,10 @@
         color: #000;
       }
 
+      .about-manifest p {
+        white-space: pre-line;
+      }
+
       /* --- TERMINAL COLOR MODES --- */
       body.theme-blue {
         --bg-body: #020617; /* deep navy */
@@ -447,6 +451,10 @@
         flex-direction: row;
         gap: 20px;
         align-items: flex-start;
+      }
+
+        .schrodinger-target {
+        text-transform: none;
       }
 
       /* MATCHED HEIGHT: Text container height matches new image height (200px) */
@@ -690,6 +698,18 @@
         grid-template-columns: 1fr 1.5fr;
       }
 
+      .contact-details a {
+        font-size: 1.3rem;
+        text-decoration: none;
+        color: #008000 /* adjust: 0.9rem → 1.2rem */
+      }
+
+      .contact-socials a {
+        font-size: 1.3rem;   /* increase as needed */
+        margin-left: 12px;   /* spacing between links */
+        display: inline-block;
+      }
+
       .contact-list {
         font-family: var(--font-mono);
         font-size: 0.85rem;
@@ -809,7 +829,7 @@
         // DATA_LOG: SYSTEM_READY
       </div>
     </div>
-
+    <script src="./config/ui.config.js"></script>
     <script>
       /* === DOT CANVAS SYSTEM === */
 
@@ -823,8 +843,11 @@
       resizeCanvas();
       window.addEventListener("resize", resizeCanvas);
 
-      const DOT_SPACING = 8;
-      const DOT_SIZE = 2;
+      const { dotCanvas: dotCfg, archive } = UI_CONFIG;
+
+      const DOT_SPACING = dotCfg.spacing;
+      const DOT_SIZE = dotCfg.size;
+
       const dots = [];
 
       function createDots() {
@@ -889,16 +912,16 @@
         dotCtx.globalAlpha = dotAlpha;
         dotCtx.fillStyle = "#fff";
         dots.forEach((d) => {
-          d.x += (d.tx - d.x) * 0.06;
-          d.y += (d.ty - d.y) * 0.08;
+          d.x += (d.tx - d.x) * dotCfg.morphSpeedX;
+          d.y += (d.ty - d.y) * dotCfg.morphSpeedY;
           dotCtx.fillRect(d.x, d.y, DOT_SIZE, DOT_SIZE);
         });
 
         if (morphing) {
           if (dotAlpha > 0.4) {
-            dotAlpha -= 0.0015; // very slow fade during morph
+            dotAlpha -= dotCfg.fadeSlow;
           } else {
-            dotAlpha -= 0.03; // fast disappear after lock
+            dotAlpha -= dotCfg.fadeFast;
           }
 
           if (dotAlpha <= 0) {
@@ -906,6 +929,7 @@
             return;
           }
         }
+
 
         requestAnimationFrame(animateDots);
       }
@@ -940,7 +964,7 @@
 
         archiveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const SAMPLE_GAP = 4;
+        const SAMPLE_GAP = archive.sampleGap;
         const STAGE_SIZE = Math.min(rect.width, rect.height);
 
         function imageToPoints(img) {
@@ -1038,9 +1062,8 @@
           archiveCtx.fillStyle = "#fff";
 
           archiveDots.forEach((d) => {
-            d.x += (d.tx - d.x) * 0.08;
-            d.y += (d.ty - d.y) * 0.08;
-
+            d.x += (d.tx - d.x) * archive.lerpSpeed;
+            d.y += (d.ty - d.y) * archive.lerpSpeed;
             archiveCtx.beginPath();
             archiveCtx.arc(d.x, d.y, 1, 0, Math.PI * 2);
             archiveCtx.fill();
@@ -1076,11 +1099,12 @@
         const mainInterface = document.getElementById("main-interface");
         let loadProgress = "";
         let steps = 0;
+        const { boot } = UI_CONFIG;
         const loadingInterval = setInterval(() => {
           loadProgress += "-";
           loaderLine.innerText = loadProgress;
           steps++;
-          if (steps > 75) {
+          if (steps > boot.totalSteps) {
             clearInterval(loadingInterval);
 
             if (logoReady) {
@@ -1100,59 +1124,53 @@
               preloader.style.display = "none";
               mainInterface.style.opacity = "1";
               loadPage("home");
-            }, 800);
+            }, boot.fadeOutMs);
           }
-        }, 80);
+        }, boot.stepIntervalMs);
       });
 
       const eventsDB = [
-        [
-          {
-            date: "NOV 25",
-            num: "01",
-            title: "SINGULARITY<br>TALK",
-            desc: "// Deep dive into Black Hole Thermodynamics.",
-            img: null,
-          },
-          {
-            date: "DEC 02",
-            num: "02",
-            title: "TELESCOPE<br>NIGHT",
-            desc: "// Observation session at the OAT.",
-            img: null,
-          },
-          {
-            date: "TBA",
-            num: "03",
-            title: "QUANTUM<br>WORKSHOP",
-            desc: "// Intro to Q-Computing.",
-            img: null,
-          },
-        ],
-        [
-          {
-            date: "JAN 15",
-            num: "04",
-            title: "DARK MATTER<br>SYMPOSIUM",
-            desc: "// Investigating the missing mass.",
-            img: null,
-          },
-          {
-            date: "FEB 10",
-            num: "05",
-            title: "ROCKETRY<br>101",
-            desc: "// Propulsion systems basics.",
-            img: null,
-          },
-          {
-            date: "MAR 05",
-            num: "06",
-            title: "STRING<br>THEORY",
-            desc: "// Unifying the fundamental forces.",
-            img: null,
-          },
-        ],
-      ];
+      [
+        {
+          date: "APR 20",
+          num: "01",
+          title: "NEP-2020<br>WORKSHOP",
+          desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
+          img: "./event_images/nep2020.png",
+        },
+        {
+          date: "NOV",
+          num: "02",
+          title: "QUANTUM<br>COMPUTING",
+          desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
+          img: "./event_images/quantum_talk.png",
+        },
+        {
+          date: "JUN 27",
+          num: "03",
+          title: "JOY OF<br>PHYSICS",
+          desc: "// Special lecture by Dr. H. C. Verma with Prof. P. K. Ahluwalia at NIT Hamirpur.",
+          img: "./event_images/joy_of_physics.png",
+        },
+      ],
+      [
+        {
+          date: "DEC 28",
+          num: "04",
+          title: "RESUME<br>WORKSHOP",
+          desc: "// Online resume building workshop conducted with Team Abraxas.",
+          img: "./event_images/resume_workshop.png",
+        },
+        {
+          date: "MAR 10",
+          num: "05",
+          title: "NATIONAL<br>SCIENCE DAY",
+          desc: "// Quiz and debate session celebrating National Science Day and the Raman Effect.",
+          img: "./event_images/science_day.png",
+        },
+      ],
+    ];
+
 
       const teamDB = [
         [
@@ -1171,35 +1189,35 @@
           {
             role: "FINANCE HEAD",
             name: "AYUSH<br>ABHYUDAYA",
-            resolve: "FINANCIAL BOSS",
+            resolve: "HEAD OF FINANCE",
             img: null,
           },
           {
             role: "TECHNICAL HEAD",
             name: "SAMBHAV\u200B\u200B",
-            resolve: "TECH GURU",
+            resolve: "TECH HEAD",
             img: null,
           },
           {
             role: "PR HEAD",
             name: "PEEYUSH<br>SHARMA",
-            resolve: "STRONG PR",
+            resolve: "PUBLIC RELN",
             img: null,
           },
           {
             role: "CREATIVE HEAD",
             name: "AKSHAT<br>DIMRI",
-            resolve: "MAX CREATIVE",
+            resolve: "α Δ",
             img: "./images/akshat.jpg",
           },
         ],
         [
-          { role: "EXEC MEMBER", name: "RANDOM<br>PERSON", img: null },
-          { role: "EXEC MEMBER", name: "ANOTHER<br>PERSON", img: null },
-          { role: "EXEC MEMBER", name: "SOMEONE<br>ELSE", img: null },
-          { role: "EXEC MEMBER", name: "ANOTHER<br>RANDOM", img: null },
-          { role: "EXEC MEMBER", name: "PLACEHOLDER<br>PERSON", img: null },
-          { role: "EXEC MEMBER", name: "LAST<br>HUMAN", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>1", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>2", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>3", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>4", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>5", img: null },
+          { role: "EXEC MEMBER", name: "EXEC<br>6", img: null },
         ],
       ];
 
@@ -1243,42 +1261,38 @@
             name: "AYUSH SHARMA",
             role: "PRESIDENT",
             phone: "+91 98350 35190",
-            email: "ayush@physteo.in",
+            email: "23bph106@nith.ac.in",
             socials: {
-              IG: "#",
-              IN: "#",
-              GH: "#",
+              IG: "https://www.instagram.com/ay.u.sh_sharma/"
             },
           },
           {
             name: "SAHIL RANA",
             role: "VICE PRESIDENT",
             phone: "+91 98161 62477",
-            email: "sahil@physteo.in",
+            email: "23bma036@nith.ac.in",
             socials: {
-              IG: "#",
-              IN: "#",
+              IG: "https://www.instagram.com/__sa_hil__ra_na__"
             },
           },
           {
-            name: "AKSHAT DIMRI",
-            role: "CREATIVE HEAD",
-            phone: "+91 XXXXXXXX",
-            email: "akshat@physteo.in",
+            name: "PEEYUSH SHARMA",
+            role: "PR HEAD",
+            phone: "+91 70182 06411",
+            email: "23bph030@nith.ac.in",
             socials: {
-              IG: "#",
-              IN: "#",
             },
           },
         ],
         exec: [
-          { name: "RANDOM PERSON" },
-          { name: "ANOTHER PERSON" },
-          { name: "SOMEONE ELSE" },
+          { name: "EXEC 1" },
+          { name: "EXEC 2" },
+          { name: "EXEC 3" },
         ],
         society: {
           IG: "https://www.instagram.com/physteo/",
-          IN: "#",
+          IN: "https://in.linkedin.com/in/physteo-nith-34a405255",
+          X: "https://x.com/physteo",
           EMAIL: "physteo@nith.ac.in",
         },
       };
@@ -1308,7 +1322,7 @@
             setTimeout(() => panel.classList.add("visible"), i * 100);
           });
           resetStatus();
-        }, 400);
+        }, UI_CONFIG.boot.postBootDelayMs);
       }
 
       function renderHome() {
@@ -1328,6 +1342,8 @@
                     <div style="flex: 1; display:flex; flex-direction:column; justify-content:center; padding: 30px;">
                         <span class="date">STATUS</span>
                         <h3>RECRUITING</h3>
+                        <h3>SOPHOMORE INTERVIEWS 2026</h3>
+                        <h3>13 JAN | 5 PM | PHY DEPT.</h3>
                     </div>
                     <div class="wave-container" id="wave-box">
                         <div class="wave-tooltip" id="wave-tooltip"></div>
@@ -1339,7 +1355,7 @@
                     </div>
                     <div style="flex: 1; display:flex; flex-direction:column; justify-content:center; padding: 30px;">
                         <span class="date">LOCATION</span>
-                        <h3>OAT ROOF</h3>
+                        <h3>DOPPS</h3>
                     </div>
                 </div>
             `;
@@ -1396,7 +1412,11 @@
             }${y}`;
             updateStatusBar(`WAVE_FUNC_PROBE | COORDS: [X:${x}, Y:${y}]`);
             clearTimeout(window.statusTimeout);
-            window.statusTimeout = setTimeout(resetStatus, 1500);
+            window.statusTimeout = setTimeout(
+              resetStatus,
+              UI_CONFIG.status.resetDelayMs
+            );
+
           };
           waveBox.addEventListener("mousemove", updateTooltip);
           waveBox.addEventListener("touchstart", (e) =>
@@ -1548,15 +1568,27 @@
         viewContainer.innerHTML = `
                 <div class="content-panel about-manifest">
                     <h1 class="type-target">
-                        <span class="big-char">P</span>URSUING<br>
-                        <span class="big-char">T</span>RUTH<br>
-                        <span class="small-text">VIA</span><br>
-                        <span class="big-char">P</span>HYSICS
+                        <span class="big-char">E</span>VOLUTION<br>
                     </h1>
                     <p>
-                        // Bridging mathematical abstraction with experimental reality.
-                        PHYSTEO functions as a live interface between theory,
-                        instrumentation, and human curiosity.
+                    // originated as a small collective driven by curiosity in physics
+                    // over time, it evolved through ideation, drafting, and execution—documented as
+                    // archived states rather than static milestones.
+
+                    // What began as focused discussions and internal explorations gradually expanded
+                    // into lectures, workshops, outreach events, and interdisciplinary dialogue.
+
+                    // In its current state, PHYSTEO functions as an open system.
+                    // As of this academic year, the society has been opened to students
+                    // from all branches—recognizing that scientific inquiry is no longer
+                    // confined to disciplinary boundaries.
+
+                    // PHYSTEO now operates at the intersection of physics, computation,
+                    // engineering, data, and design—serving as a shared platform
+                    // for observation, experimentation, and collaborative learning.
+
+                    // The archive is not a record of the past.
+                    // And the system remains in active evolution.
                     </p>
                 </div>
 
@@ -1566,8 +1598,8 @@
                         <span class="manifest-value">PHYSTEO_NITH</span>
                     </div>
                     <div class="manifest-entry">
-                        <span class="manifest-label schrodinger-target">SECTOR</span>
-                        <span class="manifest-value">FUNDAMENTAL_PHYSICS</span>
+                        <span class="manifest-label schrodinger-target">DOMAINS</span>
+                        <span class="manifest-value">FUNDAMENTAL PHY → INTERDISCIPLINARYY</span>
                     </div>
                     <div class="manifest-entry">
                         <span class="manifest-label schrodinger-target">STATUS</span>
@@ -1580,6 +1612,14 @@
                     <div class="manifest-entry">
                         <span class="manifest-label schrodinger-target">AFFILIATION</span>
                         <span class="manifest-value">NIT_HAMIRPUR</span>
+                    </div>
+                    <div class="manifest-entry">
+                        <span class="manifest-label schrodinger-target">FACULTY IN.</span>
+                        <span class="manifest-value">SANDEEP SHARMA</span>
+                    </div>
+                    <div class="manifest-entry">
+                        <span class="manifest-label schrodinger-target">LEADERSHIP</span>
+                        <span class="manifest-value">AYUSH | SAHIL</span>
                     </div>
                 </div>
             `;
@@ -1625,11 +1665,9 @@
                     <span style="font-family:var(--font-mono); font-size:0.8rem;">
                         PHYSTEO HANDLES :
                         <span class="contact-socials">
-                            <a href="${contactDB.society.IG}">INSTAGRAM</a>
-                            <a href="${contactDB.society.IN}">LINKEDIN</a>
-                            <a href="mailto:${
-                              contactDB.society.EMAIL
-                            }">EMAIL</a>
+                            <a href="${contactDB.society.IG}" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
+                            <a href="${contactDB.society.IN}" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
+                            <a href="mailto:${contactDB.society.EMAIL}" target="_blank" rel="noopener noreferrer">EMAIL</a>
                         </span>
                     </span>
                 </div>
@@ -1643,14 +1681,24 @@
             node.addEventListener("mouseenter", () => {
               const m = contactDB.core[node.dataset.core];
 
-              detailBox.innerText = `${m.name}
-        ${m.role}
+              const socialsHTML = Object.entries(m.socials || {})
+                .map(
+                  ([key, url]) =>
+                    `<a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a>`
+                )
+                .join(" | ");
 
-        PHONE : ${m.phone}
-        EMAIL : ${m.email}
+              detailBox.innerHTML = `
+              ${m.name}
+              ${m.role}
 
-        SOCIAL:
-        ${Object.keys(m.socials).join(" | ")}`;
+              PHONE : ${m.phone}
+              EMAIL : <a href="mailto:${m.email}">${m.email}</a>
+
+              SOCIAL:
+              ${socialsHTML || "—"}
+              `;
+
 
               updateStatusBar(`SIGNAL_LOCKED | ${m.role}`);
             });
@@ -1744,7 +1792,7 @@
                 target.innerHTML += text.charAt(i);
                 i++;
               }
-              setTimeout(typeChar, 30);
+              setTimeout(typeChar, UI_CONFIG.typing.genericSpeedMs);
             }
           }
           typeChar();
@@ -1762,7 +1810,7 @@
           if (i < text.length) {
             el.innerHTML += text.charAt(i);
             i++;
-            setTimeout(type, 35);
+            setTimeout(type, UI_CONFIG.typing.archiveCaptionSpeedMs);
           }
         }
 
@@ -1802,7 +1850,10 @@
             }
           }
           h1.innerHTML = currentContent + cursor;
-          let speed = isDeleting ? 50 : 100;
+          let speed = isDeleting
+            ? UI_CONFIG.typing.homeDeleteSpeedMs
+            : UI_CONFIG.typing.homeTypeSpeedMs;
+
           if (!isDeleting && charIndex >= fullString.length) {
             speed = 3500;
             isDeleting = true;
@@ -1832,7 +1883,7 @@
               }
               target.innerText = glitchText;
               iterations++;
-              if (iterations > 10) {
+              if (iterations > UI_CONFIG.glitch.iterations) {
                 clearInterval(interval);
 
                 const resolveText = target.dataset.resolve;
@@ -1844,7 +1895,7 @@
                   target.innerHTML = originalHTML;
                 }
               }
-            }, 50);
+            }, UI_CONFIG.glitch.frameMs);
             updateStatusBar("QUANTUM_STATE_DECOHERENCE_DETECTED...");
             clearTimeout(window.statusTimeout);
             window.statusTimeout = setTimeout(resetStatus, 1000);
@@ -1905,7 +1956,9 @@
 
       let tapCount = 0;
       let tapTimer = null;
-      const TAP_WINDOW = 700; // ms
+      const { gestures } = UI_CONFIG;
+      const TAP_WINDOW = gestures.tapWindowMs;
+ // ms
 
       document.addEventListener(
         "touchend",
@@ -1918,7 +1971,7 @@
             }, TAP_WINDOW);
           }
 
-          if (tapCount === 4) {
+          if (tapCount === gestures.tapCountForInvert) {
             clearTimeout(tapTimer);
             tapCount = 0;
 
