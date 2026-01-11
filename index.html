@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta name="description" content="Physteo is the Physics and Technology Society of NIT Hamirpur, organizing lectures, workshops, and interdisciplinary scientific events.">
+
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://physteo.vercel.app/">
+
+    <meta property="og:title" content="Physteo – NIT Hamirpur">
+    <meta property="og:description" content="Official Physics and Technology Society of NIT Hamirpur.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://physteo.vercel.app/">
+
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -873,9 +884,17 @@
       </div>
       <div class="loading-bar">SYSTEM_BOOT: <span id="loader-line"></span></div>
     </div>
-
+    <noscript>
+      <h2>Physteo – NIT Hamirpur</h2>
+      <p>
+        Physteo is the Physics and Technology Society of NIT Hamirpur.
+        We organize lectures, workshops, and interdisciplinary scientific events.
+      </p>
+    </noscript>
     <div class="grid-container" id="main-interface">
       <header>
+        <h1 style="position:absolute;left:-9999px;">Physteo - NIT Hamirpur</h1>
+
         <div class="logo" onclick="loadPage('home')">PHYSTEO_NITH</div>
         <nav>
           <ul>
@@ -1461,7 +1480,7 @@
         const observerEl = document.getElementById("observer-display");
         const jargon =
           "!@#$%^&*()_+-=[]{}|;':,.<>?/0123456789αβγδεζηθικλμνξοπρστυφχψω";
-        fetch("https://api.ipify.org?format=json")
+          fetch("https://api.ipify.org?format=json")
           .then((response) => response.json())
           .then((data) => {
             const userIP = `OBSERVER_IP: ${data.ip}`;
