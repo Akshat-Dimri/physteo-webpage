@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta name="google-site-verification" content="AH-G6L8LLh_9rcZ_cyuOsxrO8i_hf0dIsAdznpLVWKQ" />
-    <meta name="description" content="Physteo is the Physics and Technology Society of NIT Hamirpur, organizing lectures, workshops, and interdisciplinary scientific events.">
+    <meta
+      name="google-site-verification"
+      content="AH-G6L8LLh_9rcZ_cyuOsxrO8i_hf0dIsAdznpLVWKQ"
+    />
+    <meta
+      name="description"
+      content="Physteo is the Physics and Technology Society of NIT Hamirpur, organizing lectures, workshops, and interdisciplinary scientific events."
+    />
 
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow" />
 
-    <link rel="canonical" href="https://physteo.vercel.app/">
+    <link rel="canonical" href="https://physteo.vercel.app/" />
 
-    <meta property="og:title" content="Physteo – NIT Hamirpur">
-    <meta property="og:description" content="Official Physics and Technology Society of NIT Hamirpur.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://physteo.vercel.app/">
+    <meta property="og:title" content="Physteo – NIT Hamirpur" />
+    <meta
+      property="og:description"
+      content="Official Physics and Technology Society of NIT Hamirpur."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://physteo.vercel.app/" />
 
     <meta charset="UTF-8" />
     <meta
@@ -31,6 +40,7 @@
 
         --font-main: "Helvetica", "Arial", sans-serif;
         --font-mono: "Courier New", Courier, monospace;
+        --contact-accent: #008000;
       }
 
       /* --- INVERTED MODE --- */
@@ -738,10 +748,16 @@
         grid-template-columns: 1fr 1.5fr;
       }
 
+      /* === SOCIETY CONTACT HANDLES COLOR SYNC === */
+
+      .view-contact .contact-socials a {
+        color: var(--contact-accent);
+      }
+
       .contact-details a {
         font-size: 1.3rem;
         text-decoration: none;
-        color: #008000; /* adjust: 0.9rem → 1.2rem */
+        color: var(--contact-accent); /* adjust: 0.9rem → 1.2rem */
       }
 
       .contact-socials a {
@@ -764,10 +780,49 @@
         margin-bottom: 10px;
       }
 
+      /* === CONTACT SOCIALS: VERTICAL LOCKED ALIGNMENT === */
+
+      .contact-socials.vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .contact-socials.vertical a {
+        margin: 4px 0;
+      }
+
       .contact-node {
         cursor: pointer;
         opacity: 0.7;
         padding: 4px 0;
+      }
+
+      /* === SOCIETY HANDLES: LOCKED STACKED LAYOUT === */
+
+      .society-handles {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+      }
+
+      .society-title {
+        margin-bottom: 10px; /* space after colon */
+      }
+
+      .contact-socials.vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* adjustable spacing between socials */
+      }
+
+      /* === CONTACT NODE ALIGNMENT LOCK === */
+
+      .contact-node {
+        display: grid;
+        grid-template-columns: 1.2em 1fr;
+        column-gap: 6px;
+        align-items: start;
+        line-height: 1.4;
       }
 
       .contact-node:hover {
@@ -814,6 +869,8 @@
         width: 1em;
         margin-right: 6px;
         color: white;
+        justify-self: center;
+        line-height: 1.4;
       }
 
       .contact-node.active::before {
@@ -888,13 +945,15 @@
     <noscript>
       <h2>Physteo – NIT Hamirpur</h2>
       <p>
-        Physteo is the Physics and Technology Society of NIT Hamirpur.
-        We organize lectures, workshops, and interdisciplinary scientific events.
+        Physteo is the Physics and Technology Society of NIT Hamirpur. We
+        organize lectures, workshops, and interdisciplinary scientific events.
       </p>
     </noscript>
     <div class="grid-container" id="main-interface">
       <header>
-        <h1 style="position:absolute;left:-9999px;">Physteo - NIT Hamirpur</h1>
+        <h1 style="position: absolute; left: -9999px">
+          Physteo - NIT Hamirpur
+        </h1>
 
         <div class="logo" onclick="loadPage('home')">PHYSTEO_NITH</div>
         <nav>
@@ -1354,7 +1413,7 @@
             email: "23bph016@nith.ac.in",
             socials: {
               IG: "https://www.instagram.com/ay.u.sh_sharma/",
-              IN: "https://www.linkedin.com/in/ayush-kumar-sharma-337b0631b/"
+              IN: "https://www.linkedin.com/in/ayush-kumar-sharma-337b0631b/",
             },
           },
           {
@@ -1364,7 +1423,7 @@
             email: "23bma036@nith.ac.in",
             socials: {
               IG: "https://www.instagram.com/__sa_hil__ra_na__",
-              IN: "https://www.linkedin.com/in/sahil-rana-49a74828b/"
+              IN: "https://www.linkedin.com/in/sahil-rana-49a74828b/",
             },
           },
           {
@@ -1374,7 +1433,7 @@
             email: "23bch015@nith.ac.in",
             socials: {
               IG: "https://www.instagram.com/_ayush1729_",
-              IN: "https://www.linkedin.com/in/ayush-abhyudaya-262909281/"
+              IN: "https://www.linkedin.com/in/ayush-abhyudaya-262909281/",
             },
           },
           {
@@ -1384,7 +1443,7 @@
             email: "23bma037@nith.ac.in",
             socials: {
               X: "https://x.com/Sambhav59567",
-              IN: "https://www.linkedin.com/in/sambhav-2535a8285/"
+              IN: "https://www.linkedin.com/in/sambhav-2535a8285/",
             },
           },
           {
@@ -1481,7 +1540,7 @@
         const observerEl = document.getElementById("observer-display");
         const jargon =
           "!@#$%^&*()_+-=[]{}|;':,.<>?/0123456789αβγδεζηθικλμνξοπρστυφχψω";
-          fetch("https://api.ipify.org?format=json")
+        fetch("https://api.ipify.org?format=json")
           .then((response) => response.json())
           .then((data) => {
             const userIP = `OBSERVER_IP: ${data.ip}`;
@@ -1750,12 +1809,14 @@
                     <div class="contact-section">
                         <div class="contact-section-title">CORE CONTACTS</div>
                         ${contactDB.core
-                          .map(
-                            (m, i) =>
-                              `<div class="contact-node" data-core="${i}">
-                                ${m.name}
-                            </div>`
-                          )
+                          .map((m, i) => {
+                            const firstName = m.name.split(" ")[0];
+                            return `
+                              <div class="contact-node" data-core="${i}">
+                                ${firstName}
+                              </div>
+                            `;
+                          })
                           .join("")}
                     </div>
 
@@ -1773,22 +1834,42 @@
                     CONTACT FIELD ACTIVE\nHOVER/TAP FOR INFO.
                 </div>
 
-                <div class="content-panel" style="grid-column: 1 / -1; border-top:1px solid var(--border-color);">
-                    <span style="font-family:var(--font-mono); font-size:0.8rem;">
-                        PHYSTEO HANDLES :
-                        <span class="contact-socials">
-                            <a href="${
-                              contactDB.society.IG
-                            }" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
-                            <a href="${
-                              contactDB.society.IN
-                            }" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
-                            <a href="mailto:${
-                              contactDB.society.EMAIL
-                            }" target="_blank" rel="noopener noreferrer">EMAIL</a>
-                        </span>
-                    </span>
+                <div
+                  class="content-panel"
+                  style="grid-column: 1 / -1; border-top: 1px solid var(--border-color);"
+                >
+                  <div class="society-handles">
+                    <div class="society-title">PHYSTEO SOCIALS :</div>
+
+                    <div class="contact-socials vertical">
+                      <a
+                        href="${contactDB.society.IG}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >INSTAGRAM</a
+                      >
+                      <a
+                        href="${contactDB.society.IN}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >LINKEDIN</a
+                      >
+                      <a
+                        href="mailto:${contactDB.society.EMAIL}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >EMAIL</a
+                      >
+                      <a
+                        href="${contactDB.society.X}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >X</a
+                      >
+                    </div>
+                  </div>
                 </div>
+
             `;
 
         const detailBox = document.getElementById("contact-details");
@@ -1847,9 +1928,9 @@
         const socialsHTML = Object.entries(m.socials || {})
           .map(
             ([key, url]) =>
-              `<a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a>`
+              `<div><a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a></div>`
           )
-          .join(" | ");
+          .join("");
 
         detailBox.innerHTML = `
           <div>${m.name}</div>
