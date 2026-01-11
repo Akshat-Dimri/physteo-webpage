@@ -222,8 +222,30 @@
         color: #000;
       }
 
+      /* === CLEAN COMMENT-BULLET TYPOGRAPHY === */
+
       .about-manifest p {
-        white-space: pre-line;
+        white-space: normal;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-top: 20px;
+        opacity: 0.9;
+        max-width: 90%;
+      }
+
+      .about-manifest p span.comment {
+        display: block;
+        position: relative;
+        padding-left: 1.8em; /* space for // */
+        margin-bottom: 0.6em;
+      }
+
+      .about-manifest p span.comment::before {
+        content: "//";
+        position: absolute;
+        left: 0;
+        opacity: 0.6;
       }
 
       /* --- TERMINAL COLOR MODES --- */
@@ -343,14 +365,6 @@
         display: block;
       }
 
-      .about-manifest p {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        margin-top: 20px;
-        opacity: 0.9;
-        max-width: 90%;
-      }
-
       .system-manifest {
         font-family: var(--font-mono);
         font-size: 0.8rem;
@@ -453,7 +467,7 @@
         align-items: flex-start;
       }
 
-        .schrodinger-target {
+      .schrodinger-target {
         text-transform: none;
       }
 
@@ -515,13 +529,13 @@
 
       /* === ARCHIVE NAV PAIR === */
 
-        .scroll-next {
-            right: 24px;
-        }
+      .scroll-next {
+        right: 24px;
+      }
 
-        .scroll-prev {
-            right: 84px; /* exactly one button width + gap */
-        }
+      .scroll-prev {
+        right: 84px; /* exactly one button width + gap */
+      }
 
       body:not(.inverted) .scroll-arrow {
         background: black;
@@ -683,12 +697,12 @@
           font-size: 0.7rem;
         }
 
-            .scroll-next {
-            right: 20px;
+        .scroll-next {
+          right: 20px;
         }
 
         .scroll-prev {
-            right: 70px;
+          right: 70px;
         }
 
         #dynamic-view.view-about {
@@ -715,12 +729,12 @@
       .contact-details a {
         font-size: 1.3rem;
         text-decoration: none;
-        color: #008000 /* adjust: 0.9rem → 1.2rem */
+        color: #008000; /* adjust: 0.9rem → 1.2rem */
       }
 
       .contact-socials a {
-        font-size: 1.3rem;   /* increase as needed */
-        margin-left: 12px;   /* spacing between links */
+        font-size: 1.3rem; /* increase as needed */
+        margin-left: 12px; /* spacing between links */
         display: inline-block;
       }
 
@@ -766,11 +780,49 @@
         text-decoration: underline;
       }
 
+      /* === CONTACT CLEAN WRAPPING === */
+
+      .contact-details {
+        white-space: normal;
+      }
+
+      .contact-details a,
+      .contact-details div,
+      .contact-details span {
+        display: block;
+        padding-left: 1.6em;
+        text-indent: -1.6em;
+      }
+
+      /* === CONTACT INDICATOR DOT === */
+
+      .contact-node::before {
+        content: "●";
+        display: inline-block;
+        width: 1em;
+        margin-right: 6px;
+        color: white;
+      }
+
+      .contact-node.active::before {
+        animation: blinkGreen 1s infinite;
+      }
+
+      @keyframes blinkGreen {
+        0%,
+        100% {
+          color: #22c55e;
+        }
+        50% {
+          color: transparent;
+        }
+      }
+
       /* === ARCHIVE CAPTION BOX === */
 
-/* === ARCHIVE CAPTION BOX (RELATIVE & OFFSET-SAFE) === */
+      /* === ARCHIVE CAPTION BOX (RELATIVE & OFFSET-SAFE) === */
 
-    .archive-caption {
+      .archive-caption {
         position: absolute;
 
         right: 4%;
@@ -794,21 +846,20 @@
         overflow: hidden;
 
         z-index: 5;
-    }
+      }
 
       @media (max-width: 768px) {
         .archive-caption {
-            left: 6%;
-            right: 6%;
-            bottom: 10%;
+          left: 6%;
+          right: 6%;
+          bottom: 10%;
 
-            transform: translateY(-10px);
+          transform: translateY(-10px);
 
-            max-width: none;
-            font-size: 0.7rem;
+          max-width: none;
+          font-size: 0.7rem;
         }
-    }
-
+      }
     </style>
   </head>
   <body>
@@ -943,7 +994,6 @@
             return;
           }
         }
-
 
         requestAnimationFrame(animateDots);
       }
@@ -1144,47 +1194,46 @@
       });
 
       const eventsDB = [
-      [
-        {
-          date: "NOV 2022",
-          num: "02",
-          title: "QUANTUM<br>COMPUTING",
-          desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
-          img: "./event_images/quantum_talk.png",
-        },
-        {
-          date: "APR 2023",
-          num: "01",
-          title: "NEP-2020<br>WORKSHOP",
-          desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
-          img: "./event_images/nep2020.png",
-        },
-        {
-          date: "JUN 2024",
-          num: "03",
-          title: "JOY OF<br>PHYSICS",
-          desc: "// Special lecture by Dr. H. C. Verma with Prof. P. K. Ahluwalia at NIT Hamirpur.",
-          img: "./event_images/joy_of_physics.png",
-        },
-      ],
-      [
-        {
-          date: "DEC 2024",
-          num: "04",
-          title: "RESUME<br>WORKSHOP",
-          desc: "// Online resume building workshop conducted with Team Abraxas.",
-          img: "./event_images/resume_workshop.png",
-        },
-        {
-          date: "MAR 2025",
-          num: "05",
-          title: "NATIONAL<br>SCIENCE DAY",
-          desc: "// Quiz and debate session celebrating National Science Day and the Raman Effect.",
-          img: "./event_images/science_day.png",
-        },
-      ],
-    ];
-
+        [
+          {
+            date: "NOV 2022",
+            num: "02",
+            title: "QUANTUM<br>COMPUTING",
+            desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
+            img: "./event_images/quantum_talk.png",
+          },
+          {
+            date: "APR 2023",
+            num: "01",
+            title: "NEP-2020<br>WORKSHOP",
+            desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
+            img: "./event_images/nep2020.png",
+          },
+          {
+            date: "JUN 2024",
+            num: "03",
+            title: "JOY OF<br>PHYSICS",
+            desc: "// Special lecture by Dr. H. C. Verma with Prof. P. K. Ahluwalia at NIT Hamirpur.",
+            img: "./event_images/joy_of_physics.png",
+          },
+        ],
+        [
+          {
+            date: "DEC 2024",
+            num: "04",
+            title: "RESUME<br>WORKSHOP",
+            desc: "// Online resume building workshop conducted with Team Abraxas.",
+            img: "./event_images/resume_workshop.png",
+          },
+          {
+            date: "MAR 2025",
+            num: "05",
+            title: "NATIONAL<br>SCIENCE DAY",
+            desc: "// Quiz and debate session celebrating National Science Day and the Raman Effect.",
+            img: "./event_images/science_day.png",
+          },
+        ],
+      ];
 
       const teamDB = [
         [
@@ -1210,14 +1259,14 @@
             img: null,
           },
           {
-            id:"MA037",
+            id: "MA037",
             role: "TECHNICAL HEAD",
             name: "SAMBHAV\u200B\u200B",
             resolve: "TECH HEAD",
             img: "./images/members/sambhav_tech.jpeg",
           },
           {
-            id:"PH030",
+            id: "PH030",
             role: "PR HEAD",
             name: "PEEYUSH<br>SHARMA",
             resolve: "PUBLIC RLN",
@@ -1284,7 +1333,7 @@
             phone: "+91 98350 35190",
             email: "23bph016@nith.ac.in",
             socials: {
-              IG: "https://www.instagram.com/ay.u.sh_sharma/"
+              IG: "https://www.instagram.com/ay.u.sh_sharma/",
             },
           },
           {
@@ -1293,7 +1342,7 @@
             phone: "+91 98161 62477",
             email: "23bma036@nith.ac.in",
             socials: {
-              IG: "https://www.instagram.com/__sa_hil__ra_na__"
+              IG: "https://www.instagram.com/__sa_hil__ra_na__",
             },
           },
           {
@@ -1302,7 +1351,7 @@
             phone: "+91 62006 64291",
             email: "23bch015@nith.ac.in",
             socials: {
-              IG: "https://www.instagram.com/_ayush1729_"
+              IG: "https://www.instagram.com/_ayush1729_",
             },
           },
           {
@@ -1311,7 +1360,7 @@
             phone: "+91 78767 54050",
             email: "23bma037@nith.ac.in",
             socials: {
-              X: "https://x.com/Sambhav59567"
+              X: "https://x.com/Sambhav59567",
             },
           },
           {
@@ -1320,7 +1369,7 @@
             phone: "+91 70182 06411",
             email: "23bph030@nith.ac.in",
             socials: {
-              IN: "https://www.linkedin.com/in/peeyush-sharma-791659235/"
+              IN: "https://www.linkedin.com/in/peeyush-sharma-791659235/",
             },
           },
           {
@@ -1329,15 +1378,11 @@
             phone: "+91 63981 22292",
             email: "23bph005@nith.ac.in",
             socials: {
-              IN: "https://www.linkedin.com/in/akshatdimri-nith/"
+              IN: "https://www.linkedin.com/in/akshatdimri-nith/",
             },
-          }
+          },
         ],
-        exec: [
-          { name: "EXEC 1" },
-          { name: "EXEC 2" },
-          { name: "EXEC 3" },
-        ],
+        exec: [{ name: "EXEC 1" }, { name: "EXEC 2" }, { name: "EXEC 3" }],
         society: {
           IG: "https://www.instagram.com/physteo/",
           IN: "https://in.linkedin.com/in/physteo-nith-34a405255",
@@ -1350,7 +1395,6 @@
       let currentTeamPage = 0;
       const viewContainer = document.getElementById("dynamic-view");
       let contactLockedIndex = null;
-
 
       function loadPage(pageName) {
         updateStatusBar(`LOADING_MODULE_[${pageName.toUpperCase()}]...`);
@@ -1467,7 +1511,6 @@
               resetStatus,
               UI_CONFIG.status.resetDelayMs
             );
-
           };
           waveBox.addEventListener("mousemove", updateTooltip);
           waveBox.addEventListener("touchstart", (e) =>
@@ -1521,9 +1564,9 @@
           html += `
                 <div class="content-panel"
                     onmouseenter="
-                        updateStatusBar('SCANNING_MEMBER_ID: ${member.id} | ROLE: ${
-            member.role
-          }');
+                        updateStatusBar('SCANNING_MEMBER_ID: ${
+                          member.id
+                        } | ROLE: ${member.role}');
                         
                     "
                     onmouseleave="
@@ -1621,25 +1664,19 @@
                         <span class="big-char">E</span>VOLUTION<br>
                     </h1>
                     <p>
-                    // originated as a small collective driven by curiosity in physics
-                    // over time, it evolved through ideation, drafting, and execution—documented as
-                    // archived states rather than static milestones.
+                    <span class="comment">originated as a small collective driven by curiosity in physics</span>
+                    <span class="comment">over time, it evolved through ideation, drafting, and execution—documented as archived states rather than static milestones.</span>
 
-                    // What began as focused discussions and internal explorations gradually expanded
-                    // into lectures, workshops, outreach events, and interdisciplinary dialogue.
+                    <span class="comment">What began as focused discussions and internal explorations gradually expanded into lectures, workshops, outreach events, and interdisciplinary dialogue.</span>
 
-                    // In its current state, PHYSTEO functions as an open system.
-                    // As of this academic year, the society has been opened to students
-                    // from all branches—recognizing that scientific inquiry is no longer
-                    // confined to disciplinary boundaries.
+                    <span class="comment">In its current state, PHYSTEO functions as an open system.</span>
+                    <span class="comment">As of this academic year, the society has been opened to students from all branches—recognizing that scientific inquiry is no longer confined to disciplinary boundaries.</span>
 
-                    // PHYSTEO now operates at the intersection of physics, computation,
-                    // engineering, data, and design—serving as a shared platform
-                    // for observation, experimentation, and collaborative learning.
+                    <span class="comment">PHYSTEO now operates at the intersection of physics, computation, engineering, data, and design—serving as a shared platform for observation, experimentation, and collaborative learning.</span>
 
-                    // The archive is not a record of the past.
-                    // And the system remains in active evolution.
-                    </p>
+                    <span class="comment">The archive is not a record of the past.</span>
+                    <span class="comment">And the system remains in active evolution.</span>
+                  </p>
                 </div>
 
                 <div class="content-panel system-manifest">
@@ -1692,7 +1729,7 @@
                           .map(
                             (m, i) =>
                               `<div class="contact-node" data-core="${i}">
-                                ● ${m.name}
+                                ${m.name}
                             </div>`
                           )
                           .join("")}
@@ -1702,7 +1739,7 @@
                         <div class="contact-section-title">EXEC CONTACTS</div>
                         ${contactDB.exec
                           .map(
-                            (m) => `<div class="contact-node">○ ${m.name}</div>`
+                            (m) => `<div class="contact-node">${m.name}</div>`
                           )
                           .join("")}
                     </div>
@@ -1716,9 +1753,15 @@
                     <span style="font-family:var(--font-mono); font-size:0.8rem;">
                         PHYSTEO HANDLES :
                         <span class="contact-socials">
-                            <a href="${contactDB.society.IG}" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
-                            <a href="${contactDB.society.IN}" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
-                            <a href="mailto:${contactDB.society.EMAIL}" target="_blank" rel="noopener noreferrer">EMAIL</a>
+                            <a href="${
+                              contactDB.society.IG
+                            }" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
+                            <a href="${
+                              contactDB.society.IN
+                            }" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
+                            <a href="mailto:${
+                              contactDB.society.EMAIL
+                            }" target="_blank" rel="noopener noreferrer">EMAIL</a>
                         </span>
                     </span>
                 </div>
@@ -1749,7 +1792,13 @@
                 return;
               }
 
+              document
+                .querySelectorAll(".contact-node")
+                .forEach((n) => n.classList.remove("active"));
+
+              node.classList.add("active");
               contactLockedIndex = index;
+
               const m = contactDB.core[index];
               updateContactDetails(m);
               updateStatusBar(`CONTACT_LOCKED | ${m.role}`);
@@ -1759,7 +1808,6 @@
               if (contactLockedIndex === null) resetStatus();
             });
           });
-
 
         setTimeout(() => {
           document
@@ -1780,17 +1828,16 @@
           .join(" | ");
 
         detailBox.innerHTML = `
-      ${m.name}
-      ${m.role}
-
-      PHONE : ${m.phone}
-      EMAIL : <a href="mailto:${m.email}">${m.email}</a>
-
-      SOCIAL:
-      ${socialsHTML || "—"}
-      `;
+          <div>${m.name}</div>
+          <div>${m.role}</div>
+          <br>
+          <div>PHONE : ${m.phone}</div>
+          <div>EMAIL : <a href="mailto:${m.email}">${m.email}</a></div>
+          <br>
+          <div>SOCIAL:</div>
+          <div>${socialsHTML || "—"}</div>
+        `;
       }
-
 
       function nextPageEvents() {
         updateStatusBar("PAGINATING_EVENT_INDEX...");
@@ -1823,13 +1870,12 @@
         currentArchiveIndex--;
 
         if (currentArchiveIndex < 0) {
-            currentArchiveIndex = archiveDB.length - 1;
+          currentArchiveIndex = archiveDB.length - 1;
         }
 
         startArchiveMorph(archiveDB[currentArchiveIndex].img);
         typeArchiveCaption(archiveDB[currentArchiveIndex].caption);
-    }
-
+      }
 
       function untypeAll(callback) {
         const targets = document.querySelectorAll(".type-target");
@@ -1905,7 +1951,6 @@
         type();
       }
 
-
       function startHomeTyping() {
         const h1 = document.getElementById("home-title");
         if (!h1) return;
@@ -1969,7 +2014,8 @@
           let glitchInterval = null;
 
           const triggerGlitch = () => {
-            if (!target.innerText || target.innerText.trim().length === 0) return;
+            if (!target.innerText || target.innerText.trim().length === 0)
+              return;
 
             const originalHTML = target.innerHTML;
             target.dataset.originalHTML = originalHTML;
@@ -1998,7 +2044,10 @@
 
                 const resolveText = target.dataset.resolve;
                 if (resolveText) {
-                  target.innerText = resolveText.slice(0, target.innerText.length);
+                  target.innerText = resolveText.slice(
+                    0,
+                    target.innerText.length
+                  );
                 } else {
                   target.innerHTML = originalHTML;
                 }
@@ -2031,7 +2080,6 @@
               if (target.dataset.originalHTML) {
                 target.innerHTML = target.dataset.originalHTML;
               }
-              ;
             }
           });
 
@@ -2039,8 +2087,6 @@
           target.addEventListener("touchstart", triggerGlitch);
         });
       }
-
-
 
       window.addEventListener("scroll", () => {
         const currentScrollY = window.scrollY;
@@ -2095,7 +2141,7 @@
       let tapTimer = null;
       const { gestures } = UI_CONFIG;
       const TAP_WINDOW = gestures.tapWindowMs;
- // ms
+      // ms
 
       document.addEventListener(
         "touchend",
