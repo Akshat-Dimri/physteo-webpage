@@ -1223,7 +1223,8 @@
       let lastScrollY = window.scrollY;
       setInterval(() => uptime++, 1000);
 
-      function updateStatusBar(msg) {
+      function updateStatusBar(msg, force = false) {
+        if (preloadActive && !force) return;
         const statusEl = document.getElementById("status-bar");
         if (statusEl) statusEl.innerText = `// DATA_LOG: ${msg}`;
       }
@@ -1235,6 +1236,21 @@
           : "NULL";
         updateStatusBar(`MODULE_[${moduleName}]_ACTIVE | UPTIME: ${uptime}s`);
       }
+
+            // === PRELOAD STATUS SIGNAL ===
+      let preloadActive = false;
+
+      function setPreloadStatus(active) {
+        if (active) {
+          preloadActive = true;
+          updateStatusBar("FETCHING_METADATA | PREFETCHING_ASSETS...", true);
+        } else {
+          preloadActive = false;
+          setTimeout(resetStatus, 0);
+        }
+      }
+
+
 
       document.addEventListener("DOMContentLoaded", () => {
         const loaderLine = document.getElementById("loader-line");
@@ -1255,12 +1271,18 @@
               morphing = true;
             }
 
-            // Warm up archive images after boot
-            if ("requestIdleCallback" in window) {
-              requestIdleCallback(preloadArchiveImages);
-            } else {
-              setTimeout(preloadArchiveImages, 1500);
-            }
+          // === WARM UP ALL ASSETS AFTER BOOT ===
+          const preloadAllAssets = () => {
+            preloadArchiveImages(); // keep your archive morph ready
+            preloadImages(collectAllImageSources());
+          };
+
+          if ("requestIdleCallback" in window) {
+            requestIdleCallback(preloadAllAssets);
+          } else {
+            setTimeout(preloadAllAssets, 1200);
+          }
+
 
             preloader.style.opacity = "0";
             setTimeout(() => {
@@ -1385,6 +1407,25 @@
         { img: "./images/logo2.png", caption: "got this rendered" },
       ];
 
+      function collectAllImageSources() {
+        const sources = [];
+
+        // EVENTS
+        eventsDB.flat().forEach((e) => {
+          if (e.img) sources.push(e.img);
+        });
+
+        // TEAM
+        teamDB.flat().forEach((m) => {
+          if (m.img) sources.push(m.img);
+        });
+
+        // LOGO
+        sources.push("./images/physteo-logo.png");
+
+        return sources;
+      }
+
       // === ARCHIVE IMAGE PRE-DECODE CACHE ===
       const archiveImageCache = [];
 
@@ -1398,6 +1439,51 @@
           img.loading = "eager";
 
           archiveImageCache.push(img);
+        });
+      }
+
+            // === GLOBAL IMAGE PRELOAD CACHE ===
+      const imagePreloadCache = [];
+
+      // === GENERIC IMAGE PRELOADER ===
+      function preloadImages(urls = []) {
+        setPreloadStatus(true);
+
+        let loaded = 0;
+        const total = urls.length;
+
+        if (total === 0) {
+          setPreloadStatus(false);
+          return;
+        }
+
+        urls.forEach((src) => {
+          if (!src) {
+            loaded++;
+            return;
+          }
+
+          const img = new Image();
+          img.src = src;
+          img.decoding = "async";
+          img.loading = "eager";
+
+          img.onload = img.onerror = () => {
+            loaded++;
+
+            // subtle live progress pulse
+            updateStatusBar(
+              `FETCHING_METADATA | ASSETS ${loaded}/${total}`,true
+            );
+
+            if (loaded === total) {
+              setTimeout(() => {
+                setPreloadStatus(false);
+              }, 600); // brief linger for effect
+            }
+          };
+
+          imagePreloadCache.push(img);
         });
       }
 
