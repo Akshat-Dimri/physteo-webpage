@@ -80,6 +80,67 @@
         background: transparent;
       }
 
+      /* === LOCATION IMAGE BOX === */
+
+      .location-box {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        overflow: hidden;
+      }
+
+      .location-box img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* fills box on desktop */
+        object-position: center;
+        z-index: 1;
+      }
+
+      /* Overlay content */
+      /* === LOCATION LABEL BOX (TOP-LEFT, OPAQUE) === */
+
+      .location-label {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+
+        background: #000000; /* fully opaque */
+        border: 1px solid #ffffff;
+
+        padding: 10px 14px;
+        z-index: 3;
+
+        font-family: var(--font-mono);
+        text-align: left;
+      }
+
+      .location-label span {
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.9;
+        color: #ffffff;
+      }
+
+      .location-label h3 {
+        margin-top: 4px;
+        font-size: 0.95rem;
+        color: #ffffff;
+      }
+
+
+      /* Mobile: keep proportions */
+      @media (max-width: 768px) {
+        .location-box {
+          aspect-ratio: 16 / 9;
+        }
+      }
+
+
       /* --- ARTIFACT IMAGE STYLING --- */
       .artifact-frame {
         position: relative;
@@ -374,13 +435,13 @@
         position: relative;
       }
 
-      /* This creates the visual 90% height safely */
+      /* to create the visual 90% height safely for visual consistency */
       .archive-stage {
         position: absolute;
         inset: 0;
       }
 
-      /* Canvas truly fills usable space */
+      /* Canvas fills usable space */
       .archive-stage canvas {
         width: 100%;
         height: 100%;
@@ -497,13 +558,13 @@
       .team-details {
         display: flex;
         flex-direction: column;
-        height: 200px; /* This must match your image height */
-        justify-content: flex-start; /* Aligns ID to the top */
+        height: 200px; /* match image height */
+        justify-content: flex-start; /* to align   ID to the top */
         flex: 1;
       }
 
       .team-name-group {
-        margin-top: auto; /* This pushes the name group to the very bottom */
+        margin-top: auto; /* pushing the name group to the bottom */
       }
 
       .team-separator {
@@ -757,11 +818,11 @@
       .contact-details a {
         font-size: 1.3rem;
         text-decoration: none;
-        color: var(--contact-accent); /* adjust: 0.9rem → 1.2rem */
+        color: var(--contact-accent);
       }
 
       .contact-socials a {
-        font-size: 1.3rem; /* increase as needed */
+        font-size: 1.3rem;
         margin-left: 12px; /* spacing between links */
         display: inline-block;
       }
@@ -888,7 +949,6 @@
       }
 
       /* === ARCHIVE CAPTION BOX === */
-
       /* === ARCHIVE CAPTION BOX (RELATIVE & OFFSET-SAFE) === */
 
       .archive-caption {
@@ -973,7 +1033,9 @@
         // DATA_LOG: SYSTEM_READY
       </div>
     </div>
+    
     <script src="./config/ui.config.js"></script>
+    
     <script>
       /* === DOT CANVAS SYSTEM === */
 
@@ -1187,7 +1249,7 @@
           animateArchiveDots();
         }
 
-        // If already decoded, run immediately
+        // to run immediately if already decoded
         if (img.complete) {
           processArchiveImage(img);
         } else {
@@ -1237,7 +1299,7 @@
         updateStatusBar(`MODULE_[${moduleName}]_ACTIVE | UPTIME: ${uptime}s`);
       }
 
-            // === PRELOAD STATUS SIGNAL ===
+      // === PRELOAD STATUS SIGNAL ===
       let preloadActive = false;
 
       function setPreloadStatus(active) {
@@ -1249,8 +1311,6 @@
           setTimeout(resetStatus, 0);
         }
       }
-
-
 
       document.addEventListener("DOMContentLoaded", () => {
         const loaderLine = document.getElementById("loader-line");
@@ -1271,18 +1331,17 @@
               morphing = true;
             }
 
-          // === WARM UP ALL ASSETS AFTER BOOT ===
-          const preloadAllAssets = () => {
-            preloadArchiveImages(); // keep your archive morph ready
-            preloadImages(collectAllImageSources());
-          };
+            // === WARM UP ALL ASSETS AFTER BOOT ===
+            const preloadAllAssets = () => {
+              preloadArchiveImages(); // keep the archive morph ready
+              preloadImages(collectAllImageSources());
+            };
 
-          if ("requestIdleCallback" in window) {
-            requestIdleCallback(preloadAllAssets);
-          } else {
-            setTimeout(preloadAllAssets, 1200);
-          }
-
+            if ("requestIdleCallback" in window) {
+              requestIdleCallback(preloadAllAssets);
+            } else {
+              setTimeout(preloadAllAssets, 1200);
+            }
 
             preloader.style.opacity = "0";
             setTimeout(() => {
@@ -1442,7 +1501,7 @@
         });
       }
 
-            // === GLOBAL IMAGE PRELOAD CACHE ===
+      // === GLOBAL IMAGE PRELOAD CACHE ===
       const imagePreloadCache = [];
 
       // === GENERIC IMAGE PRELOADER ===
@@ -1473,7 +1532,8 @@
 
             // subtle live progress pulse
             updateStatusBar(
-              `FETCHING_METADATA | ASSETS ${loaded}/${total}`,true
+              `FETCHING_METADATA | ASSETS ${loaded}/${total}`,
+              true
             );
 
             if (loaded === total) {
@@ -1605,9 +1665,8 @@
                 <div class="content-panel" style="background: rgba(125,125,125,0.05); padding: 0;">
                     <div style="flex: 1; display:flex; flex-direction:column; justify-content:center; padding: 30px;">
                         <span class="date">STATUS</span>
-                        <h3>RECRUITING</h3>
-                        <h3>SOPHOMORE INTERVIEWS 2026</h3>
-                        <h3>13 JAN | 5 PM | PHY DEPT.</h3>
+                        <h3>RECRUITMENT DONE</h3>
+                        <h3>SOPHOMORE INTERVIEWS 2026 COMPLETED</h3>
                     </div>
                     <div class="wave-container" id="wave-box">
                         <div class="wave-tooltip" id="wave-tooltip"></div>
@@ -1617,9 +1676,20 @@
                             </path>
                         </svg>
                     </div>
-                    <div style="flex: 1; display:flex; flex-direction:column; justify-content:center; padding: 30px;">
-                        <span class="date">LOCATION</span>
-                        <h3>DOPPS</h3>
+                    <div style="flex: 1; padding: 0;">
+                      <a
+                        href="https://maps.app.goo.gl/35r3WretxHSBstZS8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="location-box"
+                      >
+                        <img src="./images/location_pin.png" alt="DOPPS Location" />
+
+                        <div class="location-label">
+                          <span>LOCATION</span>
+                          <h3>DOPPS</h3>
+                        </div>
+                      </a>
                     </div>
                 </div>
             `;
