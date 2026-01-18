@@ -1041,6 +1041,7 @@
 
       const dotCanvas = document.getElementById("dot-canvas");
       const dotCtx = dotCanvas.getContext("2d");
+      const TEAM_PAGE_SIZE = 6;
 
       function resizeCanvas() {
         dotCanvas.width = window.innerWidth;
@@ -1396,7 +1397,6 @@
       ];
 
       const teamDB = [
-        [
           {
             id: "PH016",
             role: "PRESIDENT",
@@ -1439,15 +1439,19 @@
             resolve: "α Δ",
             img: "./images/members/akshat.jpg",
           },
-        ],
-        [
-          { role: "EXEC MEMBER", name: "EXEC<br>1", img: null },
-          { role: "EXEC MEMBER", name: "EXEC<br>2", img: null },
-          { role: "EXEC MEMBER", name: "EXEC<br>3", img: null },
-          { role: "EXEC MEMBER", name: "EXEC<br>4", img: null },
-          { role: "EXEC MEMBER", name: "EXEC<br>5", img: null },
-          { role: "EXEC MEMBER", name: "EXEC<br>6", img: null },
-        ],
+          { id:"CH032", role: "EXEC MEMBER", name: "NAVEEN<br>", img: "./images/members/execs/Naveen_24BCH032.png" },
+          { id:"EC094", role: "EXEC MEMBER", name: "SHIV<br>LAL", img: "./images/members/execs/Shiv_Lal_24bec094.jpg" },
+          { id:"MA001", role: "EXEC MEMBER", name: "AASTHA<br>CHOUDHARY", img: "./images/members/execs/aastha_24bma001.png" },
+          { id:"MA020", role: "EXEC MEMBER", name: "KUNAL<br>THAKUR", img: "./images/members/execs/Kunal_thakur_24bma020.jpg" },
+          { id:"MA037", role: "EXEC MEMBER", name: "SHUBHAM<br>VERMA", img: "./images/members/execs/Shubham_Verma_24BMA037.jpg" },
+          { id:"PH020", role: "EXEC MEMBER", name: "KASHISH<br>KAPOOR", img: "./images/members/execs/Kashish_kapoor_24bph020.png" },
+          { id:"PH027", role: "EXEC MEMBER", name: "SAHIL<br>SHARMA", img: "./images/members/execs/Sahil_24bph027.jpeg" },
+          { id:"PH028", role: "EXEC MEMBER", name: "SAI<br>YEESHU", img: null },
+          { id:"PH030", role: "EXEC MEMBER", name: "SHIVAM<br>KAUNDAL", img: "./images/members/execs/Shivam_24bph030.jpeg" },
+          { id:"PH032", role: "EXEC MEMBER", name: "SHREYA<br>", img: "./images/members/execs/shreya_24BPH032.jpg" },
+          { id:"PH039", role: "EXEC MEMBER", name: "VIKENDRA<br>KASHYAP", img: "./images/members/execs/Vikendra_24BPH039.png" },
+          { id:"PH044", role: "EXEC MEMBER", name: "ROHAN KR.<br>MISHRA", img: "./images/members/execs/Rohan_24bph044.jpg" }
+          
       ];
 
       const archiveDB = [
@@ -1797,7 +1801,9 @@
       }
 
       function renderTeam(pageIndex) {
-        const data = teamDB[pageIndex];
+        const start = pageIndex * TEAM_PAGE_SIZE;
+        const end = start + TEAM_PAGE_SIZE;
+        const data = teamDB.slice(start, end);
         let html = "";
         data.forEach((member) => {
           html += `
@@ -2111,11 +2117,12 @@
       function nextPageTeam() {
         updateStatusBar("PAGINATING_TEAM_INDEX...");
         untypeAll(() => {
-          currentTeamPage++;
-          if (currentTeamPage >= teamDB.length) currentTeamPage = 0;
+          const maxPages = Math.ceil(teamDB.length / TEAM_PAGE_SIZE);
+          currentTeamPage = (currentTeamPage + 1) % maxPages;
           renderTeam(currentTeamPage);
         });
       }
+
 
       function nextArchive() {
         updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
