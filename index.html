@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta
@@ -101,6 +101,16 @@
         z-index: 1;
       }
 
+      /* Default (dark / blue / green) */
+      .location-box img {
+        content: url("./images/location_pin.png");
+      }
+
+      /* Light (inverted) mode */
+      body.inverted .location-box img {
+        content: url("./images/location_pin_light.png");
+      }
+
       /* Overlay content */
       /* === LOCATION LABEL BOX (TOP-LEFT, OPAQUE) === */
 
@@ -132,7 +142,6 @@
         color: #ffffff;
       }
 
-
       /* Mobile: keep proportions */
       @media (max-width: 768px) {
         .location-box {
@@ -140,24 +149,51 @@
         }
       }
 
-
       /* --- ARTIFACT IMAGE STYLING --- */
       .artifact-frame {
         position: relative;
         border: 1px solid var(--border-color);
         background: #000;
         overflow: hidden;
-        background: linear-gradient(
-            rgba(18, 16, 16, 0) 50%,
-            rgba(0, 0, 0, 0.1) 50%
-          ),
+        background:
+          linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
           linear-gradient(
             90deg,
             rgba(255, 0, 0, 0.03),
             rgba(0, 255, 0, 0.01),
             rgba(0, 0, 255, 0.03)
           );
-        background-size: 100% 3px, 3px 100%;
+        background-size:
+          100% 3px,
+          3px 100%;
+      }
+
+      /* === EVENT SVG ANIMATION (SCOPED) === */
+
+      .event-animation {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1 / 1; /* keeps square */
+        overflow: hidden;
+      }
+
+      .event-animation::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("./images/singularity_webpage_black.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .event-animation svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
       }
 
       .event-card .artifact-frame {
@@ -165,6 +201,7 @@
         height: 140px;
         margin-bottom: 15px;
       }
+
 
       /* SCALED UP: Increased width to 150px and height to 200px */
       .team-card .artifact-frame {
@@ -180,7 +217,10 @@
         object-position: top;
         filter: grayscale(1) contrast(1.2) brightness(0.7);
         opacity: 0.6;
-        transition: filter 0.4s ease, opacity 0.4s ease, transform 0.8s ease;
+        transition:
+          filter 0.4s ease,
+          opacity 0.4s ease,
+          transform 0.8s ease;
       }
 
       .content-panel:hover .data-img {
@@ -193,9 +233,11 @@
         background: #fff;
       }
       body.inverted .data-img {
-        filter: grayscale(1) contrast(1.5) invert(1);
-        opacity: 0.8;
+        filter: grayscale(1) contrast(1.2) brightness(0.7);
+        opacity: 0.6;
       }
+
+
 
       /* --- PRELOADER STYLES --- */
       #preloader {
@@ -276,8 +318,12 @@
         display: flex;
         flex-direction: column;
         opacity: 0;
-        transition: opacity 1s ease, background-color 0.5s ease,
-          border-color 0.5s ease, color 0.5s ease, text-shadow 0.2s ease,
+        transition:
+          opacity 1s ease,
+          background-color 0.5s ease,
+          border-color 0.5s ease,
+          color 0.5s ease,
+          text-shadow 0.2s ease,
           transform 0.2s ease;
       }
 
@@ -384,7 +430,9 @@
         text-transform: uppercase;
         font-size: 0.85rem;
         cursor: pointer;
-        transition: background 0.3s, color 0.3s;
+        transition:
+          background 0.3s,
+          color 0.3s;
       }
 
       nav button:hover {
@@ -680,7 +728,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        overflow: hidden; /* retain overflow */
         border-top: 1px solid var(--border-color);
         border-bottom: 1px solid var(--border-color);
         background: var(--accent-color);
@@ -716,7 +764,8 @@
         z-index: 100;
         box-shadow: 0 0 10px rgba(125, 125, 125, 0.2);
       }
-
+      /* config optimizatn for mobile devices, scale down file size - if req -  */
+      /* retain aspect ration here - problem aayegi scaling main nahi toh */
       /* --- MOBILE OPTIMIZATIONS --- */
       @media (max-width: 768px) {
         header {
@@ -1033,9 +1082,9 @@
         // DATA_LOG: SYSTEM_READY
       </div>
     </div>
-    
+
     <script src="./config/ui.config.js"></script>
-    
+
     <script>
       /* === DOT CANVAS SYSTEM === */
 
@@ -1210,7 +1259,7 @@
           const scale = Math.min(
             STAGE_SIZE / (maxX - minX),
             STAGE_SIZE / (maxY - minY),
-            1
+            1,
           );
 
           const ox = rect.width / 2 - (minX + (maxX - minX) / 2) * scale;
@@ -1357,18 +1406,18 @@
       const eventsDB = [
         [
           {
-            date: "NOV 2022",
-            num: "02",
-            title: "QUANTUM<br>COMPUTING",
-            desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
-            img: "./event_images/quantum_talk.png",
-          },
-          {
             date: "APR 2023",
             num: "01",
             title: "NEP-2020<br>WORKSHOP",
             desc: "// National workshop on reimagining education under NEP-2020, featuring Prof. B. N. Jagatap and Prof. B. P. Singh.",
             img: "./event_images/nep2020.png",
+          },
+          {
+            date: "NOV 2022",
+            num: "02",
+            title: "QUANTUM<br>COMPUTING",
+            desc: "// Expert talk by Ramy Shelbaya on domains and real-world applications of quantum computing.",
+            img: "./event_images/quantum_talk.png",
           },
           {
             date: "JUN 2024",
@@ -1393,65 +1442,126 @@
             desc: "// Quiz and debate session celebrating National Science Day and the Raman Effect.",
             img: "./event_images/science_day.png",
           },
+          {
+            date: "SOMETIME 2026",
+            num: "06",
+            title: "Singularity",
+            desc: ". -..- .--. ---",
+            img: null,
+          },
         ],
       ];
 
       const teamDB = [
-          {
-            id: "PH016",
-            role: "PRESIDENT",
-            name: "AYUSH<br>SHARMA",
-            resolve: "THE PRES.",
-            img: "./images/members/ayush_pres.jpg.png",
-          },
-          {
-            id: "MA036",
-            role: "VICE PRESIDENT",
-            name: "SAHIL<br>RANA",
-            resolve: "V.P.",
-            img: "./images/members/sahil_vp.png",
-          },
-          {
-            id: "CH015",
-            role: "FINANCE HEAD",
-            name: "AYUSH<br>ABHYUDAYA",
-            resolve: "HEAD OF FINANCE",
-            img: "./images/members/ayush_finance.jpg",
-          },
-          {
-            id: "MA037",
-            role: "TECHNICAL HEAD",
-            name: "SAMBHAV\u200B\u200B",
-            resolve: "TECH HEAD",
-            img: "./images/members/sambhav_tech.jpeg",
-          },
-          {
-            id: "PH030",
-            role: "PR HEAD",
-            name: "PEEYUSH<br>SHARMA",
-            resolve: "PUBLIC RLN",
-            img: "./images/members/peeyush_pr.jpeg.png",
-          },
-          {
-            id: "PH005",
-            role: "CREATIVE HEAD",
-            name: "AKSHAT<br>DIMRI",
-            resolve: "α Δ",
-            img: "./images/members/akshat.jpg",
-          },
-          { id:"CH032", role: "EXEC MEMBER", name: "NAVEEN<br>", img: "./images/members/execs/Naveen_24BCH032.png" },
-          { id:"EC094", role: "EXEC MEMBER", name: "SHIV<br>LAL", img: "./images/members/execs/Shiv_Lal_24bec094.jpg" },
-          { id:"MA001", role: "EXEC MEMBER", name: "AASTHA<br>CHOUDHARY", img: "./images/members/execs/aastha_24bma001.png" },
-          { id:"MA020", role: "EXEC MEMBER", name: "KUNAL<br>THAKUR", img: "./images/members/execs/Kunal_thakur_24bma020.jpg" },
-          { id:"MA037", role: "EXEC MEMBER", name: "SHUBHAM<br>VERMA", img: "./images/members/execs/Shubham_Verma_24BMA037.jpg" },
-          { id:"PH020", role: "EXEC MEMBER", name: "KASHISH<br>KAPOOR", img: "./images/members/execs/Kashish_kapoor_24bph020.png" },
-          { id:"PH027", role: "EXEC MEMBER", name: "SAHIL<br>SHARMA", img: "./images/members/execs/Sahil_24bph027.jpeg" },
-          { id:"PH028", role: "EXEC MEMBER", name: "SAI<br>YEESHU", img: null },
-          { id:"PH030", role: "EXEC MEMBER", name: "SHIVAM<br>KAUNDAL", img: "./images/members/execs/Shivam_24bph030.jpeg" },
-          { id:"PH032", role: "EXEC MEMBER", name: "SHREYA<br>", img: "./images/members/execs/shreya_24BPH032.jpg" },
-          { id:"PH039", role: "EXEC MEMBER", name: "VIKENDRA<br>KASHYAP", img: "./images/members/execs/Vikendra_24BPH039.png" },
-          { id:"PH044", role: "EXEC MEMBER", name: "ROHAN KR.<br>MISHRA", img: "./images/members/execs/Rohan_24bph044.jpg" }
-          
+        {
+          id: "PH016",
+          role: "PRESIDENT",
+          name: "AYUSH<br>SHARMA",
+          resolve: "THE PRES.",
+          img: "./images/members/ayush_pres.jpg.png",
+        },
+        {
+          id: "MA036",
+          role: "VICE PRESIDENT",
+          name: "SAHIL<br>RANA",
+          resolve: "V.P.",
+          img: "./images/members/sahil_vp.png",
+        },
+        {
+          id: "CH015",
+          role: "FINANCE HEAD",
+          name: "AYUSH<br>ABHYUDAYA",
+          resolve: "HEAD OF FINANCE",
+          img: "./images/members/ayush_finance.jpg",
+        },
+        {
+          id: "MA037",
+          role: "TECHNICAL HEAD",
+          name: "SAMBHAV\u200B\u200B", /*first name hai toh spaced this up*/
+          resolve: "TECH HEAD",
+          img: "./images/members/sambhav_tech.jpeg",
+        },
+        {
+          id: "PH030",
+          role: "PR HEAD",
+          name: "PEEYUSH<br>SHARMA",
+          resolve: "PUBLIC RLN",
+          img: "./images/members/peeyush_pr.jpeg.png",
+        },
+        {
+          id: "PH005",
+          role: "CREATIVE HEAD",
+          name: "AKSHAT<br>DIMRI",
+          resolve: "α Δ",
+          img: "./images/members/akshat.jpg",
+        },
+        {
+          id: "CH032",
+          role: "EXEC MEMBER",
+          name: "NAVEEN<br>",
+          img: "./images/members/execs/Naveen_24BCH032.png",
+        },
+        {
+          id: "EC094",
+          role: "EXEC MEMBER",
+          name: "SHIV<br>LAL",
+          img: "./images/members/execs/Shiv_Lal_24bec094.jpg",
+        },
+        {
+          id: "MA001",
+          role: "EXEC MEMBER",
+          name: "AASTHA<br>CHOUDHARY",
+          img: "./images/members/execs/aastha_24bma001.png",
+        },
+        {
+          id: "MA020",
+          role: "EXEC MEMBER",
+          name: "KUNAL<br>THAKUR",
+          img: "./images/members/execs/Kunal_thakur_24bma020.jpg",
+        },
+        {
+          id: "MA037",
+          role: "EXEC MEMBER",
+          name: "SHUBHAM<br>VERMA",
+          img: "./images/members/execs/Shubham_Verma_24BMA037.jpg",
+        },
+        {
+          id: "PH020",
+          role: "EXEC MEMBER",
+          name: "KASHISH<br>KAPOOR",
+          img: "./images/members/execs/Kashish_kapoor_24bph020.png",
+        },
+        {
+          id: "PH027",
+          role: "EXEC MEMBER",
+          name: "SAHIL<br>SHARMA",
+          img: "./images/members/execs/Sahil_24bph027.jpeg",
+        },
+        { id: "PH028", role: "EXEC MEMBER", name: "SAI<br>YEESHU", img: null },
+        {
+          id: "PH030",
+          role: "EXEC MEMBER",
+          name: "SHIVAM<br>KAUNDAL",
+          img: "./images/members/execs/Shivam_24bph030.jpeg",
+        },
+        {
+          id: "PH032",
+          role: "EXEC MEMBER",
+          name: "SHREYA<br>",
+          img: "./images/members/execs/shreya_24BPH032.jpg",
+        },
+        {
+          id: "PH039",
+          role: "EXEC MEMBER",
+          name: "VIKENDRA<br>KASHYAP",
+          img: "./images/members/execs/Vikendra_24BPH039.png",
+        },
+        {
+          id: "PH044",
+          role: "EXEC MEMBER",
+          name: "ROHAN KR.<br>MISHRA",
+          img: "./images/members/execs/Rohan_24bph044.jpg",
+        },
       ];
 
       const archiveDB = [
@@ -1537,7 +1647,7 @@
             // subtle live progress pulse
             updateStatusBar(
               `FETCHING_METADATA | ASSETS ${loaded}/${total}`,
-              true
+              true,
             );
 
             if (loaded === total) {
@@ -1752,12 +1862,12 @@
             clearTimeout(window.statusTimeout);
             window.statusTimeout = setTimeout(
               resetStatus,
-              UI_CONFIG.status.resetDelayMs
+              UI_CONFIG.status.resetDelayMs,
             );
           };
           waveBox.addEventListener("mousemove", updateTooltip);
           waveBox.addEventListener("touchstart", (e) =>
-            updateTooltip(e.touches[0])
+            updateTooltip(e.touches[0]),
           );
           waveBox.addEventListener("mouseleave", () => {
             tooltip.style.display = "none";
@@ -1765,6 +1875,59 @@
           });
         }
         startHomeTyping();
+      }
+
+      function initEventAnimation(container) {
+        const svg = container.querySelector("svg");
+        const paths = svg.querySelectorAll("path");
+        const dots = Array.from(svg.querySelectorAll(".dot")).map((el, i) => ({
+          el,
+          path: paths[i < 2 ? 0 : 1],
+          t: i * 150,
+          speed: 0.2 - i * 0.03,
+        }));
+
+        const overlap = svg.querySelector(".overlap");
+
+        function animate() {
+          const positions = [];
+
+          dots.forEach((d) => {
+            const len = d.path.getTotalLength();
+            d.t = (d.t + d.speed) % len;
+            const p = d.path.getPointAtLength(d.t);
+            d.el.setAttribute("cx", p.x);
+            d.el.setAttribute("cy", p.y);
+            positions.push(p);
+          });
+
+          let found = false;
+          for (let i = 0; i < positions.length; i++) {
+            for (let j = i + 1; j < positions.length; j++) {
+              const dx = positions[i].x - positions[j].x;
+              const dy = positions[i].y - positions[j].y;
+              if (Math.hypot(dx, dy) < 8) {
+                overlap.setAttribute(
+                  "cx",
+                  (positions[i].x + positions[j].x) / 2,
+                );
+                overlap.setAttribute(
+                  "cy",
+                  (positions[i].y + positions[j].y) / 2,
+                );
+                overlap.setAttribute("r", 7);
+                found = true;
+                break;
+              }
+            }
+            if (found) break;
+          }
+
+          if (!found) overlap.setAttribute("r", 0);
+          requestAnimationFrame(animate);
+        }
+
+        animate();
       }
 
       function renderEvents(pageIndex) {
@@ -1775,10 +1938,37 @@
                 <div class="content-panel">
                     <div class="event-card">
                         ${
-                          item.img
-                            ? `<div class="artifact-frame"><img src="${item.img}" class="data-img"></div>`
-                            : ""
+                          item.num === "06"
+                            ? `
+                            <div class="artifact-frame">
+                              <div class="event-animation">
+                                <svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid slice">
+                                <!-- PATH 1 -->
+                                <path fill="none"
+                                  d="M168,245l-14-17-6-8-5-7-5-6-2-6-2-4v-4l2-2,1-2h6l4,1,4,1,7,3,7,4,9,4,7,5,8,5,2,1,12.078,9.453L214,231l10,7,8,6,48,40,9,7,7,5,7,5,7,5,9,6,12,6,10,4,7,3,6,1,6,1,4-2,1-3-1-4-2-4-8-12-7-8-6-6-4-4-51-51-13-11-6-4-6-3-6-3-7-3-8-1-6,1-7,1-5,1-7,4-7,4-14,11-5,4-3,5-2,1-58,44-8,9-3,5-1,5,2,2,3,2h6l5,1,8-2,14-3,9-3,11-4,97-52,13-6,9-7,17-6,7-2,10-4,9-2,7-1,8-3,7-1,4-1h15l3,1,3,2v7l-2,3-3,4-1,1-90,65-11,5-8,5-9,3-8,3-8,3-2-1-9-2-7-5-6-4-6-6-5-4Z"/>
+                                <!-- PATH 2 -->
+                                <path fill="none"
+                                  d="M254,209l8-4,7-4,6-3,6-2,4-2,5-1,7-1,5,1,7,2,5,1,4,3,3,3,5,5,2,5,1,2v2l1,10v6l-1,12-1,7-1,5-4,9-3,5-7,6-7,5-7,4-7,3-5,3-29,14-23,9-8,2h-7l-5-1-7-1-5-2-4-3-4-2-6-4-2-4-3-4-4-8-4-9-2-8-1-9-1-9v-2l2-6,2-5,3-4,4-4,6-4,8-3,6-2,7-4,16-8,11-2h8Z"/>
+
+                                <!-- DOTS -->
+                                <circle class="dot" r="4" fill="white"/>
+                                <circle class="dot" r="4" fill="white"/>
+                                <circle class="dot" r="4" fill="white"/>
+                                <circle class="dot" r="4" fill="white"/>
+
+                                <!-- OVERLAP -->
+                                <circle class="overlap" r="0" fill="#8c2424" opacity="0.8"/>
+                                </svg>
+                              </div>
+                            </div>
+                          `
+                            : item.img
+                              ? `<div class="artifact-frame">
+                                <img src="${item.img}" class="data-img">
+                              </div>`
+                              : ""
                         }
+
                         <div>
                             <span class="date">${item.date}</span>
                             <div class="event-number">${item.num}</div>
@@ -1797,6 +1987,11 @@
             .querySelectorAll(".content-panel")
             .forEach((p) => p.classList.add("visible"));
           startGenericTyping();
+        }, 50);
+        setTimeout(() => {
+          document
+            .querySelectorAll(".event-animation")
+            .forEach(initEventAnimation);
         }, 50);
       }
 
@@ -1822,8 +2017,8 @@
                             <img src="${
                               member.img || "placeholder.jpg"
                             }" class="data-img" style="${
-            !member.img ? "opacity:0.2" : ""
-          }">
+                              !member.img ? "opacity:0.2" : ""
+                            }">
                         </div>
                         <div class="team-details">
                             <span class="date">MEMBER_ID: ${member.id}</span>
@@ -1986,7 +2181,7 @@
                         <div class="contact-section-title">EXEC CONTACTS</div>
                         ${contactDB.exec
                           .map(
-                            (m) => `<div class="contact-node">${m.name}</div>`
+                            (m) => `<div class="contact-node">${m.name}</div>`,
                           )
                           .join("")}
                     </div>
@@ -2090,7 +2285,7 @@
         const socialsHTML = Object.entries(m.socials || {})
           .map(
             ([key, url]) =>
-              `<div><a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a></div>`
+              `<div><a href="${url}" target="_blank" rel="noopener noreferrer">${key}</a></div>`,
           )
           .join("");
 
@@ -2122,7 +2317,6 @@
           renderTeam(currentTeamPage);
         });
       }
-
 
       function nextArchive() {
         updateStatusBar("PAGINATING_ARCHIVE_INDEX...");
@@ -2211,7 +2405,7 @@
             i++;
             archiveCaptionTimer = setTimeout(
               type,
-              UI_CONFIG.typing.archiveCaptionSpeedMs
+              UI_CONFIG.typing.archiveCaptionSpeedMs,
             );
           }
         }
@@ -2226,6 +2420,8 @@
         const textSteps = [
           "EXPLORE<br>THE<br>UNSEEN",
           "<span class='big-char'>N</span><span class='small-text'>EXUS FOR</span><br><span class='big-char'>I</span><span class='small-text'>NNOVATION IN</span><br><span class='big-char'>T</span><span class='small-text'>ECHNICAL</span><br><span class='big-char'>H</span><span class='small-text'>YPERGROWTH</span>",
+          "<span class='big-char'>P</span><span class='small-text'>ROBABILISTIC</span><br><span class='big-char'>I</span><span class='small-text'>DEATION</span>"
+
         ];
         let stepIndex = 0;
         let charIndex = 0;
@@ -2314,7 +2510,7 @@
                 if (resolveText) {
                   target.innerText = resolveText.slice(
                     0,
-                    target.innerText.length
+                    target.innerText.length,
                   );
                 } else {
                   target.innerHTML = originalHTML;
@@ -2431,7 +2627,7 @@
             setTimeout(resetStatus, 2000);
           }
         },
-        { passive: true }
+        { passive: true },
       );
     </script>
   </body>
