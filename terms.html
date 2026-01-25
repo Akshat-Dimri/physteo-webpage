@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Terms - PHYSTEO_NITH</title>
+    <style>
+      :root {
+        --bg-body: #000000;
+        --container-bg: rgba(0, 0, 0, 0.92);
+        --text-color: #ffffff;
+        --border-color: #ffffff;
+        --accent-color: #000000;
+        --font-main: "Helvetica", "Arial", sans-serif;
+        --font-mono: "Courier New", Courier, monospace;
+      }
+
+      /* PREVENT GLOBAL SCROLLING, overflow prevented */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; 
+        background-color: var(--bg-body);
+        color: var(--text-color);
+        font-family: var(--font-main);
+      }
+
+      .grid-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        height: 100vh; /* Fixed height */
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        background-color: var(--container-bg);
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
+      }
+
+      .logo {
+        padding: 0 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        font-family: var(--font-mono);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border-color);
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* LOCKED VIEWPORT */
+      #dynamic-view {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        overflow: hidden; /* No external overflow */
+      }
+
+      .content-panel {
+        padding: 40px;
+        border-right: 1px solid var(--border-color);
+        overflow-y: auto; /* Internal scroll only if text overflows */
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+      }
+      /* integrated webkit */
+      /* CUSTOM SCROLLBAR FOR WEBKIT */
+      .content-panel::-webkit-scrollbar { width: 4px; }
+      .content-panel::-webkit-scrollbar-thumb { background: var(--border-color); }
+
+      .manifest-entry {
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--border-color);
+        font-family: var(--font-mono);
+      }
+
+      .manifest-label {
+        opacity: 0.4;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+      }
+
+      .manifest-value {
+        font-size: 0.9rem;
+        display: block;
+      }
+
+      h1 {
+        font-family: var(--font-mono);
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        line-height: 1;
+        margin-bottom: 20px;
+      }
+
+      .comment {
+        display: block;
+        position: relative;
+        padding-left: 1.8em;
+        margin-bottom: 0.8em;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      .comment::before {
+        content: "//";
+        position: absolute;
+        left: 0;
+        opacity: 0.6;
+      }
+
+      .status-bar {
+        height: 40px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        background: var(--accent-color);
+        border-top: 1px solid var(--border-color);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 768px) {
+        body { overflow-y: auto; } /* Allow mobile scroll for accessibility */
+        .grid-container { height: auto; }
+        #dynamic-view { grid-template-columns: 1fr; }
+        .content-panel { border-right: none; height: auto; overflow: visible; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-container">
+      <header>
+        <a href="index.html" class="logo">PHYSTEO_NITH</a>
+        <div style="padding-right: 20px; font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.5;">
+          TERM_LOCKED_VIEW
+        </div>
+      </header>
+
+      <main id="dynamic-view">
+        <section class="content-panel">
+          <h1>LEGAL<br>ENFORCEMENT</h1>
+          <div class="comment-block">
+            <span class="comment">PROPRIETARY CODEBASE: All logic, including morphing canvases and glitch typography, is property of Physteo.</span>
+            <span class="comment">REPRODUCTION_BLOCKED: No part of this interface may be mirrored, scraped, or redeployed without explicit NIT Hamirpur authorization.</span>
+            
+            <h3 style="margin: 20px 0 10px 0; font-family: var(--font-mono); font-size: 1rem;">COPYRIGHT © 2026</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 15px;">The "Physteo" brand and the digital architecture of this site are protected under interdisciplinary intellectual property laws. Unauthorized duplication triggers immediate legal observation.</p>
+
+            <span class="comment">ACCESS_LOGGED: Your IP is currently being used to verify authorized access to this manifest.</span>
+          </div>
+        </section>
+
+        <aside class="content-panel" style="background: rgba(125,125,125,0.03);">
+          <div class="manifest-entry">
+            <span class="manifest-label">AUTH_LEVEL</span>
+            <span class="manifest-value">PUBLIC_VIEW_ONLY</span>
+          </div>
+          <div class="manifest-entry">
+            <span class="manifest-label">INTELLECTUAL_PROPERTY</span>
+            <span class="manifest-value">NON-TRANSFERABLE</span>
+          </div>
+          <div class="manifest-entry">
+            <span class="manifest-label">SOURCE_CODE_STATUS</span>
+            <span class="manifest-value">OPEN_FOR_EDUCATIONAL_PURPOSES</span>
+          </div>
+          <div class="manifest-entry" style="margin-top: 30px; border: 1px solid var(--border-color); padding: 15px;">
+            <span class="manifest-label">LEGAL_REPRESENTATION</span>
+            <span class="manifest-value" style="color: #22c55e;">PHYSTEO / NITH</span>
+          </div>
+          <div class="manifest-entry" style="margin-top: 30px; border: 1px solid var(--border-color); padding: 15px;">
+            <span class="manifest-label">CONTACT_FOR_AUTHORISED_USE</span>
+            <span class="manifest-value" style="color: #22c55e;">physteo@nith.ac.in</span>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="status-bar">
+        // SYSTEM_STATUS: PAGE_LOCKED | NO_OVERFLOW_DETECTED | UPTIME: 100%
+      </footer>
+    </div>
+  </body>
+</html>

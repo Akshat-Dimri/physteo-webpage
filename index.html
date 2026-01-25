@@ -1,3 +1,12 @@
+<!--
+© 2026 Physteo – NIT Hamirpur
+
+This website and its source code are proprietary.
+No part of this file may be copied, reproduced, modified, or redistributed
+without explicit written permission from Physteo – NIT Hamirpur.
+
+Contact: physteo@nith.ac.in
+-->
 <!doctype html>
 <html lang="en">
   <head>
@@ -701,6 +710,7 @@
         text-transform: uppercase;
       }
 
+      /* --- UPDATED STATUS BAR LAYOUT --- */
       .section-header {
         padding: 15px 20px;
         border-bottom: 1px solid var(--border-color);
@@ -709,6 +719,25 @@
         font-family: var(--font-mono);
         font-size: 0.9rem;
         transition: all 0.3s ease;
+
+        /* Added these lines */
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+      }
+
+      .legal-link {
+        font-size: 0.75rem;
+        color: inherit;
+        text-decoration: none;
+        opacity: 0.4;
+        transition: opacity 0.3s ease;
+        letter-spacing: 1px;
+      }
+
+      .legal-link:hover {
+        opacity: 1;
+        text-decoration: underline;
       }
       body.inverted .section-header {
         background: #fff;
@@ -1079,7 +1108,8 @@
       <section id="dynamic-view" class="view-home"></section>
 
       <div class="section-header" id="status-bar">
-        // DATA_LOG: SYSTEM_READY
+        <span id="status-text">// DATA_LOG: SYSTEM_READY</span>
+        <a href="terms.html" target="_blank" class="legal-link"> TERMS_OF_USE </a>
       </div>
     </div>
 
@@ -1336,10 +1366,14 @@
       setInterval(() => uptime++, 1000);
 
       function updateStatusBar(msg, force = false) {
-        if (preloadActive && !force) return;
-        const statusEl = document.getElementById("status-bar");
-        if (statusEl) statusEl.innerText = `// DATA_LOG: ${msg}`;
+      if (preloadActive && !force) return;
+      
+      // Target the specific span inside the status bar instead of the whole div
+      const statusTextEl = document.getElementById("status-text");
+      if (statusTextEl) {
+        statusTextEl.innerText = `// DATA_LOG: ${msg}`;
       }
+    }
 
       function resetStatus() {
         const currentClass = viewContainer.className;
@@ -2258,7 +2292,7 @@
             node.addEventListener("click", () => {
               const index = Number(node.dataset.core);
 
-              // clicking same contact again unlocks (optional behavior)
+              // clicking same contact again unlocks
               if (contactLockedIndex === index) {
                 contactLockedIndex = null;
                 updateStatusBar("CONTACT_FIELD_UNLOCKED");
